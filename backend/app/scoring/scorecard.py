@@ -50,15 +50,21 @@ DIMENSION_NAMES: dict[DimensionId, str] = {
 }
 
 
-def _source(record: EvidenceRecord) -> Source:
-    return Source(name=record.source_name, url=record.source_url, year=record.year)
+def _source(record: EvidenceRecord, label: str | None = None) -> Source:
+    name = f"{record.source_name} ({label})" if label else record.source_name
+    return Source(name=name, url=record.source_url, year=record.year)
 
 
 def _evaluate(definition: IndicatorDef, inputs: Inputs) -> IndicatorResult:
     score = definition.score(inputs)
-    records = [inputs.country[m] for m in definition.metrics if m in inputs.country]
+    sources = [_source(inputs.country[m]) for m in definition.metrics if m in inputs.country]
     if definition.uses_home:
-        records += [inputs.home[m] for m in definition.metrics if m in inputs.home]
+        home = inputs.profile.home_country
+        sources += [
+            _source(inputs.home[m], label=f"home: {home}")
+            for m in definition.metrics
+            if m in inputs.home
+        ]
     if definition.raw is not None:
         raw = definition.raw(inputs)
     else:
@@ -71,7 +77,7 @@ def _evaluate(definition: IndicatorDef, inputs: Inputs) -> IndicatorResult:
         score=score,
         raw=None if score is None else raw,
         unit=definition.unit,
-        sources=[_source(r) for r in records],
+        sources=sources,
     )
 
 
