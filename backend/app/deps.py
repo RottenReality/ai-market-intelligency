@@ -5,6 +5,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from app.evidence.store import EvidenceStore
 from app.profile.company import CompanyProfile, load_profile
 from app.profile.countries import Country, load_countries
 from app.settings import Settings, load_settings
@@ -21,3 +22,7 @@ def get_countries(settings: Annotated[Settings, Depends(get_settings)]) -> dict[
 
 def get_profile(settings: Annotated[Settings, Depends(get_settings)]) -> CompanyProfile:
     return load_profile(settings.config_dir)
+
+
+def get_store(settings: Annotated[Settings, Depends(get_settings)]) -> EvidenceStore:
+    return EvidenceStore(settings.db_path)
