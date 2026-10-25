@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+
+# Node
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Local data
+*.sqlite
+*.sqlite3
+*.db
+
+# Private company profile (only the example profile is committed)
+backend/config/company.yaml
+backend/config/company.md
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
