@@ -2,6 +2,7 @@ from fastapi import APIRouter, FastAPI
 
 from app.auth.routes import router as auth_router
 from app.auth.throttle import LoginThrottle
+from app.comparison.routes import router as comparison_router
 from app.scoring.routes import router as scoring_router
 
 
@@ -16,6 +17,7 @@ def create_app() -> FastAPI:
 
     api.include_router(auth_router)
     api.include_router(scoring_router)
+    api.include_router(comparison_router)
     app.include_router(api)
     return app
 

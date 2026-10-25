@@ -1,4 +1,7 @@
+from pathlib import Path
+
 from app.evidence.store import EvidenceStore
+from app.profile.countries import load_countries
 from tests.scoring.evidence_factory import COLOMBIA, USA, evidence
 
 
@@ -8,9 +11,9 @@ def seed(settings):
 
 
 def test_countries_lists_configured_countries_with_data_flag(auth_client, settings):
-    assert auth_client.get("/api/countries").json() == [
-        {"iso3": "COL", "name": "Colombia", "has_data": False}
-    ]
+    countries = auth_client.get("/api/countries").json()
+    assert countries[0] == {"iso3": "COL", "name": "Colombia", "has_data": False}
+    assert [c["iso3"] for c in countries] == list(load_countries(Path("config/countries.yaml")))
     seed(settings)
     assert auth_client.get("/api/countries").json()[0]["has_data"] is True
 
