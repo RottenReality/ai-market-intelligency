@@ -9,6 +9,10 @@ import { ScorecardPage } from './ScorecardPage'
 import { getCountries, getScorecard } from './api'
 
 vi.mock('./api')
+vi.mock('@/features/explanation/api', () => ({
+  getExplanation: vi.fn().mockResolvedValue(null),
+  createExplanation: vi.fn(),
+}))
 
 const colombia: Scorecard = {
   country: { iso3: 'COL', name: 'Colombia' },

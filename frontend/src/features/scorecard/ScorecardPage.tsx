@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router'
+import { ExplanationPanel } from '@/features/explanation/ExplanationPanel'
 import { ApiError } from '@/lib/api'
 import type { Scorecard } from '@/lib/types'
 import { AccessibilitySummary } from './AccessibilitySummary'
@@ -58,6 +59,7 @@ function ScorecardView({ scorecard }: { scorecard: Scorecard }) {
         <AccessibilitySummary scorecard={scorecard} />
         <DimensionRadar dimensions={scorecard.dimensions} />
       </div>
+      <ExplanationPanel iso3={scorecard.country.iso3} />
       {scorecard.dimensions.map((dimension) => (
         <section
           key={dimension.id}

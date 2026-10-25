@@ -56,3 +56,10 @@ export interface ComparedCountry {
 export interface Comparison {
   countries: ComparedCountry[]
 }
+
+export interface Explanation {
+  iso3: string
+  text: string
+  flagged: boolean
+  created_at: string
+}
