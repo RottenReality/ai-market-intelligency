@@ -80,12 +80,12 @@ test('429 shows the lockout message', async () => {
   ).toBeInTheDocument()
 })
 
-test('successful login navigates to the app shell', async () => {
+test('successful login after being redirected from "/" opens the app shell', async () => {
   vi.mocked(getMe)
     .mockRejectedValueOnce(new ApiError(401, 'Not authenticated'))
     .mockResolvedValue({ username: 'admin' })
   vi.mocked(login).mockResolvedValue(undefined)
-  renderApp('/login')
+  renderApp('/')
   await submitLogin('admin', 'correct horse')
   expect(await screen.findByText('Home content')).toBeInTheDocument()
   expect(screen.getByText('admin')).toBeInTheDocument()
