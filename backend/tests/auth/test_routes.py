@@ -82,3 +82,8 @@ def test_logout_clears_cookie(auth_client):
 
 def test_health_stays_public(client):
     assert client.get("/api/health").status_code == 200
+
+
+def test_non_ascii_username_is_rejected_not_crashed(client):
+    response = client.post("/api/auth/login", json={"username": "andrés", "password": PASSWORD})
+    assert response.status_code == 401
