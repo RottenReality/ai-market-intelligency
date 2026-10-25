@@ -1,7 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router'
 import { ApiError } from '@/lib/api'
+import type { Scorecard } from '@/lib/types'
+import { AccessibilitySummary } from './AccessibilitySummary'
 import { CountryPicker } from './CountryPicker'
+import { DimensionRadar } from './DimensionRadar'
 import { IndicatorTable } from './IndicatorTable'
 import { getCountries, getScorecard } from './api'
 
@@ -43,7 +46,30 @@ export function ScorecardPage() {
           {scorecardError(scorecard.error)}
         </p>
       )}
-      {scorecard.data && <IndicatorTable indicators={scorecard.data.indicators} />}
+      {scorecard.data && <ScorecardView scorecard={scorecard.data} />}
     </section>
+  )
+}
+
+function ScorecardView({ scorecard }: { scorecard: Scorecard }) {
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_auto]">
+        <AccessibilitySummary scorecard={scorecard} />
+        <DimensionRadar dimensions={scorecard.dimensions} />
+      </div>
+      {scorecard.dimensions.map((dimension) => (
+        <section
+          key={dimension.id}
+          aria-label={`${dimension.name} indicators`}
+          className="flex flex-col gap-2"
+        >
+          <h2 className="text-lg font-medium">{dimension.name}</h2>
+          <IndicatorTable
+            indicators={scorecard.indicators.filter((i) => i.dimension === dimension.id)}
+          />
+        </section>
+      ))}
+    </div>
   )
 }

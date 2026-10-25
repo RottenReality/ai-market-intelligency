@@ -12,19 +12,19 @@ import type { IndicatorResult } from '@/lib/types'
 
 export function IndicatorTable({ indicators }: { indicators: IndicatorResult[] }) {
   return (
-    <Table>
+    <Table className="table-fixed">
       <TableHeader>
         <TableRow>
-          <TableHead>Indicator</TableHead>
-          <TableHead className="text-right">Raw value</TableHead>
-          <TableHead className="text-right">Score</TableHead>
-          <TableHead>Source</TableHead>
+          <TableHead className="w-[38%]">Indicator</TableHead>
+          <TableHead className="w-[14%] text-right">Raw value</TableHead>
+          <TableHead className="w-[10%] text-right">Score</TableHead>
+          <TableHead className="w-[38%] pl-6">Source</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {indicators.map((indicator) => (
           <TableRow key={indicator.id}>
-            <TableCell>
+            <TableCell className="whitespace-normal">
               <div className="flex items-center gap-2">
                 <Badge variant="outline">{indicator.id}</Badge>
                 <span>{indicator.name}</span>
@@ -36,7 +36,7 @@ export function IndicatorTable({ indicators }: { indicators: IndicatorResult[] }
             <TableCell className="text-right font-medium tabular-nums">
               {formatScore(indicator.score)}
             </TableCell>
-            <TableCell>
+            <TableCell className="pl-6 whitespace-normal">
               <div className="flex flex-col gap-0.5">
                 {indicator.sources.map((source) => (
                   <a
