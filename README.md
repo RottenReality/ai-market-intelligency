@@ -16,11 +16,22 @@ The model is country-agnostic: adding a country is a config change, not a code c
 
 Requirements: Python 3.12 with `uv`, and Node.js 24.
 
+First create the backend configuration (it is gitignored):
+
+```bash
+cd backend
+cp .env.example .env
+uv run python -m app.cli hash-password            # paste the output into APP_PASSWORD_HASH
+uv run python -c "import secrets; print(secrets.token_urlsafe(32))"   # paste into SECRET_KEY
+```
+
+Then run both apps:
+
 ```bash
 # Backend (http://localhost:8000)
 cd backend
 uv sync
-uv run uvicorn app.main:app --reload
+uv run uvicorn app.main:app --reload --env-file .env
 
 # Frontend (http://localhost:5173), in another terminal
 cd frontend
@@ -28,7 +39,11 @@ npm install
 npm run dev
 ```
 
-The frontend proxies `/api` to the backend, so open http://localhost:5173.
+The frontend proxies `/api` to the backend, so open http://localhost:5173 and sign in with `APP_USERNAME` and the password you hashed.
+
+## Login
+
+There is one generic user, configured through environment variables (see `backend/.env.example`). Sessions use a signed, httpOnly cookie valid for 8 hours. After 5 failed attempts from the same IP, login is locked for 15 minutes.
 
 ## Tests
 
