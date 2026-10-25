@@ -1,6 +1,7 @@
 import json
 import sqlite3
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
+from contextlib import closing, contextmanager
 from pathlib import Path
 
 from app.evidence.models import EvidenceRecord
@@ -29,8 +30,12 @@ class EvidenceStore:
         with self._connect() as conn:
             conn.execute(_SCHEMA)
 
-    def _connect(self) -> sqlite3.Connection:
-        return sqlite3.connect(self.db_path)
+    @contextmanager
+    def _connect(self) -> Iterator[sqlite3.Connection]:
+        # sqlite3's own context manager commits but does not close; close explicitly so the
+        # file is never left locked (matters on Windows and for backups).
+        with closing(sqlite3.connect(self.db_path)) as conn, conn:
+            yield conn
 
     def upsert(self, records: Iterable[EvidenceRecord]) -> None:
         rows = [
