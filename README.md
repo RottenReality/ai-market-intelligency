@@ -54,6 +54,8 @@ The frontend proxies `/api` to the backend, so open http://localhost:5173 and si
 - **AI explanation:** on the scorecard, *Explain* asks an LLM for a short summary written only from the numbers on screen. Every number in the answer is checked against the data; if one can't be verified, the AI gets one retry, and if it still fails the explanation is marked for review. Explanations are saved and reused until the data or the company profile changes. The LLM provider is configured with `LLM_PROVIDER`, `LLM_API_KEY` and `LLM_MODEL`. Without them, the button reports that AI is not configured.
 - **Compare:** select several countries to see a ranking, an overlaid CAGE radar (top 3) and a values table. A "Data" column shows how many indicators each country has, because missing indicators are left out of the averages.
 
+- **PDF report:** *Export PDF* on the scorecard or the comparison downloads a report with a cover, the ranking (for several countries), each country's dimensions, indicators with sources and the saved AI explanation, plus a methodology note. Exporting never calls the AI.
+
 ## Configuration
 
 - `backend/config/countries.yaml`: target countries (ISO3 code, name, main languages, business timezone). Adding a country = adding one line, then running `collect`.
