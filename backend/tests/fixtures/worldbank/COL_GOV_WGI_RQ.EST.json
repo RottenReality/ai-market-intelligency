@@ -1,0 +1,27 @@
+[
+ {
+  "page": 1,
+  "pages": 1,
+  "per_page": 50,
+  "total": 1,
+  "sourceid": null,
+  "lastupdated": "2026-09-25"
+ },
+ [
+  {
+   "indicator": {
+    "id": "GOV_WGI_RQ.EST",
+    "value": "Regulatory Quality - Governance estimate (approx. -2.5 to +2.5)"
+   },
+   "country": {
+    "id": "CO",
+    "value": "Colombia"
+   },
+   "countryiso3code": "COL",
+   "date": "2025",
+   "value": -0.1973526,
+   "obs_status": "",
+   "decimal": 1
+  }
+ ]
+]
