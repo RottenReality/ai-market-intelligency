@@ -70,7 +70,7 @@ frontend/  React + TS (Vite)  ──/api (same origin via proxy)──►  backe
 ```
 
 - **Organised by module (feature), not by layer.** Each backend module owns its models, logic, routes and tests.
-- **Data flow:** `uv run collect [--country ISO3|--all]` fetches World Bank data, loads `data/manual_inputs.csv`, computes G1 and **writes evidence to SQLite**. The **API only reads** evidence and computes scores on request. Explanations are generated **on demand** (a UI button) and cached in SQLite, keyed by country + evidence hash + profile hash.
+- **Data flow:** `uv run python -m app.cli collect --country ISO3|--all` fetches World Bank data, loads `data/manual_inputs.csv`, computes G1 and **writes evidence to SQLite**. The **API only reads** evidence and computes scores on request. Explanations are generated **on demand** (a UI button) and cached in SQLite, keyed by country + evidence hash + profile hash.
 - **Countries:** `backend/config/countries.yaml` (iso3, name, languages, business_timezone). The home country is always collected, because it's the reference.
 - **Same origin:** the frontend always calls relative `/api/...`. Vite's dev proxy (local) and nginx (production) forward to FastAPI, so the session cookie is first-party.
 - **LLM:** a provider-agnostic port `ExplanationModel.generate(prompt) -> str`. One adapter is picked once the provider is decided (`LLM_PROVIDER` env var). Tests use a fake. The prompt contains only the scorecard payload + `company.md`.
@@ -78,7 +78,7 @@ frontend/  React + TS (Vite)  ──/api (same origin via proxy)──►  backe
 
 ### 4.1 Authentication
 
-- One user. `APP_USERNAME`, `APP_PASSWORD_HASH` (bcrypt) and `SECRET_KEY` come from environment variables, and `.env.example` documents them. `uv run hash-password` prints a hash.
+- One user. `APP_USERNAME`, `APP_PASSWORD_HASH` (bcrypt) and `SECRET_KEY` come from environment variables, and `.env.example` documents them. `uv run python -m app.cli hash-password` prints a hash.
 - `POST /api/auth/login` verifies the credentials and sets cookie `session`: an itsdangerous-signed token that is httpOnly, `SameSite=Lax`, `Secure` in production and valid for 8 h.
 - Every `/api/*` route except `/api/health` and `/api/auth/login` requires a valid session (401 otherwise).
 - **Throttle:** 5 failed logins per client IP per 15 min → 429. In-memory is enough for a single instance.
@@ -116,7 +116,7 @@ Errors use FastAPI's default `{"detail": …}`: 404 for an unknown country, 409 
 
 ## 5. Tech stack
 
-- **Backend:** Python 3.12, uv, FastAPI, pydantic, httpx, PyYAML, bcrypt, itsdangerous, fpdf2, matplotlib, stdlib `sqlite3` + `zoneinfo`. Tests with pytest (+ pypdf to read PDFs in tests). Lint with ruff.
+- **Backend:** Python 3.12, uv, FastAPI, pydantic, httpx2 (maintained httpx successor), PyYAML, bcrypt, itsdangerous, fpdf2, matplotlib, stdlib `sqlite3` + `zoneinfo`. Tests with pytest (+ pypdf to read PDFs in tests). Lint with ruff.
 - **Frontend:** Vite + React + TypeScript, React Router, Tailwind CSS + shadcn/ui, Recharts, TanStack Query. Tests with Vitest + React Testing Library.
 - **CI:** GitHub Actions runs backend and frontend tests and lint on every PR.
 - **Hosting (last slice): the team's own VPS** (Ubuntu 24.04, Docker), in its own Docker Compose project, isolated from other apps on the server:
@@ -173,8 +173,8 @@ Errors use FastAPI's default `{"detail": …}`: 404 for an unknown country, 409 
 |---|---|---|
 | 0 | `chore/walking-skeleton` | React page shows "API connected"; CI runs both suites; README quick start |
 | 1 | `feat/login` | Login page; app reachable only after login; logout |
-| 2 | `feat/worldbank-scorecard` | Pick a country → its 5 World Bank indicators with raw value, score and source |
-| 3 | `feat/full-cage-score` | Company profile + all 12 indicators, 4 dimension %, Accessibility %, radar chart |
+| 2 | `feat/worldbank-scorecard` | Company profile loader (E1 needs the home country) + pick a country → its 5 World Bank indicators with raw value, score and source |
+| 3 | `feat/full-cage-score` | All 12 indicators (profile settings used by C1, C2, G1), 4 dimension %, Accessibility %, radar chart |
 | 4 | `feat/country-comparison` | Select several countries → ranking bar chart + overlaid radar |
 | 5 | `feat/ai-explanation` | "Explain" button → guarded, cached AI explanation per country |
 | 6 | `feat/pdf-report` | "Export PDF" for one country or a comparison |
