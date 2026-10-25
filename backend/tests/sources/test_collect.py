@@ -40,3 +40,54 @@ def test_country_without_data_is_reported_as_missing_not_failed(settings):
     report = collect_country("CHI", client=fixture_client(), store=store)
     assert "CHI:internet_pct" in report.missing
     assert "CHI:internet_pct" not in [key for key, _ in report.failed]
+
+
+def test_collect_stores_computed_and_manual_metrics(settings):
+    from pathlib import Path
+
+    from app.profile.company import load_profile
+    from app.profile.countries import load_countries
+
+    store = EvidenceStore(settings.db_path)
+    report = collect_country(
+        "COL",
+        client=fixture_client(),
+        store=store,
+        settings=settings,
+        profile=load_profile(Path("config")),
+        countries=load_countries(Path("config/countries.yaml")),
+    )
+    stored = store.get_country("COL")
+    assert report.failed == []
+    assert stored["max_hour_diff_home"].value == 3
+    assert stored["max_hour_diff_home"].method == "computed"
+    assert stored["kogut_singh"].method == "computed"
+    assert stored["kogut_singh"].value > 0
+    assert stored["tax_treaty_with_home"].value is False
+    assert stored["tax_treaty_with_home"].method == "manual"
+
+
+def test_invalid_manual_file_is_reported_as_failure(settings, tmp_path):
+    from dataclasses import replace
+    from pathlib import Path
+
+    from app.profile.company import load_profile
+    from app.profile.countries import load_countries
+
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    (data_dir / "manual_inputs.csv").write_text(
+        "iso3,metric,value,year,source_name,source_url\nCOL,whatsapp_pct,lots,2025,x,https://x\n",
+        encoding="utf-8",
+    )
+    (data_dir / "hofstede.csv").write_text(Path("data/hofstede.csv").read_text(), encoding="utf-8")
+    report = collect_country(
+        "COL",
+        client=fixture_client(),
+        store=EvidenceStore(settings.db_path),
+        settings=replace(settings, data_dir=data_dir),
+        profile=load_profile(Path("config")),
+        countries=load_countries(Path("config/countries.yaml")),
+    )
+    assert report.failed[0][0] == "COL:manual_inputs"
+    assert "whatsapp_pct must be a number 0-100" in report.failed[0][1]
