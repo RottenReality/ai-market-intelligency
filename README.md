@@ -48,6 +48,11 @@ uv run --env-file .env python -m app.cli collect --all
 
 The frontend proxies `/api` to the backend, so open http://localhost:5173 and sign in with `APP_USERNAME` and the password you hashed.
 
+## Features
+
+- **Scorecard:** pick a country to see its Market Accessibility %, the four CAGE dimensions (radar chart) and all 12 indicators with raw values, scores and sources.
+- **Compare:** select several countries to see a ranking, an overlaid CAGE radar (top 3) and a values table. A "Data" column shows how many indicators each country has, because missing indicators are left out of the averages.
+
 ## Configuration
 
 - `backend/config/countries.yaml`: target countries (ISO3 code, name, main languages, business timezone). Adding a country = adding one line, then running `collect`.
