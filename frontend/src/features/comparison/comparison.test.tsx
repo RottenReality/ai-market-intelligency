@@ -15,9 +15,9 @@ const dims = (c: number, a: number, g: number, e: number) => ({ C: c, A: a, G: g
 
 const comparison: Comparison = {
   countries: [
-    { iso3: 'MEX', name: 'Mexico', has_data: true, accessibility: 61.4, dimensions: dims(40, 70, 75, 60) },
-    { iso3: 'COL', name: 'Colombia', has_data: true, accessibility: 55.7, dimensions: dims(37, 49, 71, 66) },
-    { iso3: 'CHL', name: 'Chile', has_data: false, accessibility: null, dimensions: { C: null, A: null, G: null, E: null } },
+    { iso3: 'MEX', name: 'Mexico', has_data: true, accessibility: 61.4, dimensions: dims(40, 70, 75, 60), indicators_available: 9, indicators_total: 12 },
+    { iso3: 'COL', name: 'Colombia', has_data: true, accessibility: 55.7, dimensions: dims(37, 49, 71, 66), indicators_available: 10, indicators_total: 12 },
+    { iso3: 'CHL', name: 'Chile', has_data: false, accessibility: null, dimensions: { C: null, A: null, G: null, E: null }, indicators_available: 0, indicators_total: 12 },
   ],
 }
 
@@ -67,8 +67,8 @@ test('radar overlays at most three countries and says so when more are selected'
   vi.mocked(getComparison).mockResolvedValue({
     countries: [
       ...comparison.countries.slice(0, 2),
-      { iso3: 'ESP', name: 'Spain', has_data: true, accessibility: 50, dimensions: dims(50, 50, 50, 50) },
-      { iso3: 'CHL', name: 'Chile', has_data: true, accessibility: 45, dimensions: dims(45, 45, 45, 45) },
+      { iso3: 'ESP', name: 'Spain', has_data: true, accessibility: 50, dimensions: dims(50, 50, 50, 50), indicators_available: 12, indicators_total: 12 },
+      { iso3: 'CHL', name: 'Chile', has_data: true, accessibility: 45, dimensions: dims(45, 45, 45, 45), indicators_available: 12, indicators_total: 12 },
     ],
   })
   renderPage('/compare?iso3=COL,MEX,ESP,CHL')
@@ -91,4 +91,16 @@ test('nothing selected shows a hint and does not call the API', async () => {
   renderPage('/compare')
   expect(await screen.findByText('Select countries to compare.')).toBeInTheDocument()
   expect(getComparison).not.toHaveBeenCalled()
+})
+
+test('shows data coverage and warns when countries have different coverage', async () => {
+  renderPage('/compare?iso3=COL,MEX,CHL')
+  const table = await screen.findByRole('table', { name: 'Comparison values' })
+  const colombia = within(table).getByText('Colombia').closest('tr')!
+  expect(within(colombia).getByText('10/12')).toBeInTheDocument()
+  expect(
+    screen.getByText(
+      'Countries have different amounts of data. Missing indicators are left out of the averages, so compare with care.',
+    ),
+  ).toBeInTheDocument()
 })
