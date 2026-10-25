@@ -56,3 +56,20 @@ def test_e1_lists_both_country_and_home_sources():
 def test_e1_is_missing_when_home_value_is_missing():
     e1 = by_id(build_scorecard(inputs(home_values={})))["E1"]
     assert e1.status == "missing"
+
+
+def test_c1_uses_english_level_when_company_does_not_speak_local_language():
+    values = {**COLOMBIA, "english_band": "low"}
+    c1 = by_id(build_scorecard(inputs(country_values=values)))["C1"]
+    assert c1.score == 25
+    assert c1.raw == "low"
+
+
+def test_c1_shows_local_language_supported_when_company_speaks_it():
+    from dataclasses import replace
+
+    base = inputs()
+    spanish_speaking = replace(base, profile=replace(base.profile, supported_languages=["en", "es"]))
+    c1 = by_id(build_scorecard(spanish_speaking))["C1"]
+    assert c1.score == 100
+    assert c1.raw == "local_language_supported"

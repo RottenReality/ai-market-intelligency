@@ -40,3 +40,40 @@ def inflation(annual_pct: float | None) -> float | None:
     if annual_pct is None:
         return None
     return clamp(100 - INFLATION_PENALTY_PER_POINT * annual_pct)
+
+
+ENGLISH_BAND_SCORES = {"very_high": 100, "high": 75, "moderate": 50, "low": 25, "very_low": 0}
+KS_SCORE_FACTOR = 25  # C3: Kogut-Singh 0 -> 100, 4 or more -> 0
+WORKDAY_HOURS = 8  # G1: length of the working day used for the overlap
+
+
+def language_barrier(
+    country_languages: list[str], supported_languages: list[str], english_band: str | None
+) -> float | None:
+    """C1: 100 if the company works in a local language; otherwise the English level."""
+    if set(country_languages) & set(supported_languages):
+        return 100.0
+    if english_band is None:
+        return None
+    return float(ENGLISH_BAND_SCORES[english_band])
+
+
+def channel_fit(whatsapp_pct: float | None, channels: list[str]) -> float | None:
+    """C2: how much SMS/email still matter where WhatsApp dominates messaging."""
+    if "whatsapp" in channels:
+        return 100.0
+    return None if whatsapp_pct is None else clamp(100 - whatsapp_pct)
+
+
+def cultural_distance(kogut_singh: float | None) -> float | None:
+    return None if kogut_singh is None else clamp(100 - KS_SCORE_FACTOR * kogut_singh)
+
+
+def yes_no(value: bool | None) -> float | None:
+    return None if value is None else (100.0 if value else 0.0)
+
+
+def hours_overlap(max_diff_hours: float | None) -> float | None:
+    if max_diff_hours is None:
+        return None
+    return clamp((WORKDAY_HOURS - max_diff_hours) / WORKDAY_HOURS * 100)
