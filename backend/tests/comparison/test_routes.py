@@ -64,3 +64,13 @@ def test_duplicates_are_listed_once(auth_client, settings):
 
 def test_comparison_requires_session(client):
     assert client.get("/api/comparison", params={"iso3": "COL"}).status_code == 401
+
+
+def test_each_country_reports_how_many_indicators_had_data(auth_client, settings):
+    seed_all(settings)
+    countries = auth_client.get("/api/comparison", params={"iso3": "COL,ESP,CHL"}).json()["countries"]
+    by_code = {c["iso3"]: c for c in countries}
+    # COL: 5 World Bank + C3 + G1 + A1 = 8 of 12. ESP: World Bank only = 5. CHL: nothing.
+    assert (by_code["COL"]["indicators_available"], by_code["COL"]["indicators_total"]) == (8, 12)
+    assert by_code["ESP"]["indicators_available"] == 5
+    assert (by_code["CHL"]["indicators_available"], by_code["CHL"]["indicators_total"]) == (0, 12)
