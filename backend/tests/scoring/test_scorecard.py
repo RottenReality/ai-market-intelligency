@@ -73,3 +73,8 @@ def test_c1_shows_local_language_supported_when_company_speaks_it():
     c1 = by_id(build_scorecard(spanish_speaking))["C1"]
     assert c1.score == 100
     assert c1.raw == "local_language_supported"
+
+
+def test_home_country_source_is_labelled():
+    e1 = by_id(build_scorecard(inputs()))["E1"]
+    assert [source.name for source in e1.sources] == ["World Bank", "World Bank (home: USA)"]
