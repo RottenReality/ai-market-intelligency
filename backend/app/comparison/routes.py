@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 
 from app.auth.routes import require_user
+from app.scoring.indicators import INDICATORS
 from app.scoring.routes import CountriesDep, ProfileDep, StoreDep, load_inputs, resolve_country
 from app.scoring.scorecard import build_scorecard
 
@@ -16,6 +17,9 @@ class ComparedCountry(BaseModel):
     has_data: bool
     accessibility: float | None
     dimensions: dict[str, float | None]
+    # Countries are only comparable when similar data is available: show the coverage.
+    indicators_available: int
+    indicators_total: int
 
 
 class Comparison(BaseModel):
@@ -44,6 +48,7 @@ def compare(
             compared.append(ComparedCountry(
                 iso3=country.iso3, name=country.name, has_data=False, accessibility=None,
                 dimensions={d: None for d in ("C", "A", "G", "E")},
+                indicators_available=0, indicators_total=len(INDICATORS),
             ))
             continue
         card = build_scorecard(inputs)
@@ -51,6 +56,8 @@ def compare(
             iso3=country.iso3, name=country.name, has_data=True,
             accessibility=card.accessibility,
             dimensions={d.id: d.score for d in card.dimensions},
+            indicators_available=sum(1 for i in card.indicators if i.status == "ok"),
+            indicators_total=len(card.indicators),
         ))
     compared.sort(key=lambda c: (c.accessibility is None, -(c.accessibility or 0)))
     return Comparison(countries=compared)
