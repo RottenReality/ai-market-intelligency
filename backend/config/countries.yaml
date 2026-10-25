@@ -1,0 +1,5 @@
+# Target countries. The company's home country comes from the profile and is not listed here.
+# languages: ISO 639-1 codes of the main business languages.
+# business_timezone: IANA zone of the main business city (used for working-hours overlap).
+countries:
+  - {iso3: COL, name: Colombia, languages: [es], business_timezone: America/Bogota}
