@@ -13,6 +13,10 @@ const ScorecardPage = lazy(() =>
   import('@/features/scorecard/ScorecardPage').then((m) => ({ default: m.ScorecardPage })),
 )
 
+const ComparisonPage = lazy(() =>
+  import('@/features/comparison/ComparisonPage').then((m) => ({ default: m.ComparisonPage })),
+)
+
 function PageLoading() {
   return <p className="text-sm text-muted-foreground">Loading…</p>
 }
@@ -30,6 +34,14 @@ export default function App() {
                 element={
                   <Suspense fallback={<PageLoading />}>
                     <ScorecardPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="compare"
+                element={
+                  <Suspense fallback={<PageLoading />}>
+                    <ComparisonPage />
                   </Suspense>
                 }
               />

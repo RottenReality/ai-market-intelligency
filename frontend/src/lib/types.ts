@@ -42,3 +42,17 @@ export interface CountrySummary {
   name: string
   has_data: boolean
 }
+
+export interface ComparedCountry {
+  iso3: string
+  name: string
+  has_data: boolean
+  accessibility: number | null
+  dimensions: Record<DimensionId, number | null>
+  indicators_available: number
+  indicators_total: number
+}
+
+export interface Comparison {
+  countries: ComparedCountry[]
+}
