@@ -3,3 +3,6 @@
 # business_timezone: IANA zone of the main business city (used for working-hours overlap).
 countries:
   - {iso3: COL, name: Colombia, languages: [es], business_timezone: America/Bogota}
+  - {iso3: MEX, name: Mexico, languages: [es], business_timezone: America/Mexico_City}
+  - {iso3: ESP, name: Spain, languages: [es], business_timezone: Europe/Madrid}
+  - {iso3: CHL, name: Chile, languages: [es], business_timezone: America/Santiago}
