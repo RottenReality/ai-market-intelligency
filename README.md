@@ -51,6 +51,7 @@ The frontend proxies `/api` to the backend, so open http://localhost:5173 and si
 ## Features
 
 - **Scorecard:** pick a country to see its Market Accessibility %, the four CAGE dimensions (radar chart) and all 12 indicators with raw values, scores and sources.
+- **AI explanation:** on the scorecard, *Explain* asks an LLM for a short summary written only from the numbers on screen. Every number in the answer is checked against the data; if one can't be verified, the AI gets one retry, and if it still fails the explanation is marked for review. Explanations are saved and reused until the data or the company profile changes. The LLM provider is configured with `LLM_PROVIDER`, `LLM_API_KEY` and `LLM_MODEL`. Without them, the button reports that AI is not configured.
 - **Compare:** select several countries to see a ranking, an overlaid CAGE radar (top 3) and a values table. A "Data" column shows how many indicators each country has, because missing indicators are left out of the averages.
 
 ## Configuration
