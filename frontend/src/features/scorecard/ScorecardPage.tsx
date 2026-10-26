@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router'
 import { ExplanationPanel } from '@/features/explanation/ExplanationPanel'
+import { ExportPdfButton } from '@/features/report/ExportPdfButton'
 import { ApiError } from '@/lib/api'
 import type { Scorecard } from '@/lib/types'
 import { AccessibilitySummary } from './AccessibilitySummary'
@@ -30,13 +31,16 @@ export function ScorecardPage() {
     <section className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-xl font-semibold">Country scorecard</h1>
-        {countries.data && (
-          <CountryPicker
-            countries={countries.data}
-            value={iso3}
-            onChange={(code) => setParams({ country: code })}
-          />
-        )}
+        <div className="flex flex-wrap items-center gap-3">
+          {countries.data && (
+            <CountryPicker
+              countries={countries.data}
+              value={iso3}
+              onChange={(code) => setParams({ country: code })}
+            />
+          )}
+          {scorecard.data && <ExportPdfButton iso3={[scorecard.data.country.iso3]} />}
+        </div>
       </div>
 
       {iso3 === '' && (

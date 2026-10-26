@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { ExportPdfButton } from '@/features/report/ExportPdfButton'
 import { getCountries } from '@/features/scorecard/api'
 import { ApiError } from '@/lib/api'
 import { MAX_RADAR_SERIES } from '@/lib/colors'
@@ -48,7 +49,14 @@ export function ComparisonPage() {
 
   return (
     <section className="flex flex-col gap-6">
-      <h1 className="text-xl font-semibold">Compare countries</h1>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h1 className="text-xl font-semibold">Compare countries</h1>
+        {comparison.data?.countries.some((c) => c.has_data) && (
+          <ExportPdfButton
+            iso3={comparison.data.countries.filter((c) => c.has_data).map((c) => c.iso3)}
+          />
+        )}
+      </div>
 
       <fieldset className="flex flex-wrap gap-x-6 gap-y-2">
         <legend className="mb-2 text-sm font-medium">Countries</legend>
