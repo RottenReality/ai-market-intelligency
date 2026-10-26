@@ -40,3 +40,40 @@ def test_inflation(value, expected):
 )
 def test_missing_input_gives_none(rule):
     assert rule(None) is None
+
+
+def test_language_barrier():
+    assert rules.ENGLISH_BAND_SCORES == {
+        "very_high": 100, "high": 75, "moderate": 50, "low": 25, "very_low": 0,
+    }
+    assert rules.language_barrier(["es"], ["en"], "low") == 25
+    assert rules.language_barrier(["es"], ["en", "es"], None) == 100
+    assert rules.language_barrier(["es"], ["en"], None) is None
+
+
+def test_channel_fit():
+    assert rules.channel_fit(92, ["sms", "email"]) == 8
+    assert rules.channel_fit(None, ["sms", "whatsapp"]) == 100
+    assert rules.channel_fit(None, ["sms"]) is None
+
+
+def test_cultural_distance():
+    assert rules.KS_SCORE_FACTOR == 25
+    assert rules.cultural_distance(3.0) == 25
+    assert rules.cultural_distance(5.0) == 0
+    assert rules.cultural_distance(0.0) == 100
+    assert rules.cultural_distance(None) is None
+
+
+def test_yes_no():
+    assert rules.yes_no(True) == 100
+    assert rules.yes_no(False) == 0
+    assert rules.yes_no(None) is None
+
+
+def test_hours_overlap():
+    assert rules.WORKDAY_HOURS == 8
+    assert rules.hours_overlap(3) == 62.5
+    assert rules.hours_overlap(0) == 100
+    assert rules.hours_overlap(9) == 0
+    assert rules.hours_overlap(None) is None

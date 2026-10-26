@@ -24,6 +24,14 @@ const colombia: Scorecard = {
       unit: '%', sources: [],
     },
   ],
+  dimensions: [
+    { id: 'C', name: 'Cultural', score: 37.1, available: 1, total: 3 },
+    { id: 'A', name: 'Administrative', score: 48.7, available: 3, total: 3 },
+    { id: 'G', name: 'Geographic', score: 70.7, available: 2, total: 3 },
+    { id: 'E', name: 'Economic', score: 66.4, available: 3, total: 3 },
+  ],
+  accessibility: 55.73,
+  accessibility_reason: null,
 }
 
 function renderPage(path = '/') {
@@ -73,4 +81,41 @@ test('source link points to the evidence URL', async () => {
   const link = await screen.findByRole('link', { name: /World Bank/ })
   expect(link).toHaveAttribute('href', 'https://api.worldbank.org/a3')
   expect(link).toHaveTextContent('2025')
+})
+
+test('shows the accessibility percentage', async () => {
+  vi.mocked(getScorecard).mockResolvedValue(colombia)
+  renderPage('/?country=COL')
+  expect(await screen.findByText('56%')).toBeInTheDocument()
+  expect(screen.getByText('Market accessibility')).toBeInTheDocument()
+})
+
+test('shows the not-enough-data reason when accessibility is null', async () => {
+  vi.mocked(getScorecard).mockResolvedValue({
+    ...colombia,
+    accessibility: null,
+    accessibility_reason: 'Not enough data: no indicators for Cultural',
+  })
+  renderPage('/?country=COL')
+  expect(
+    await screen.findByText('Not enough data: no indicators for Cultural'),
+  ).toBeInTheDocument()
+})
+
+test('each dimension shows its available count', async () => {
+  vi.mocked(getScorecard).mockResolvedValue(colombia)
+  renderPage('/?country=COL')
+  const geographic = (await screen.findByRole('row', { name: /Geographic/ }))
+  expect(within(geographic).getByText('71')).toBeInTheDocument()
+  expect(within(geographic).getByText('2/3 indicators')).toBeInTheDocument()
+})
+
+test('indicators are grouped under their dimension headings', async () => {
+  vi.mocked(getScorecard).mockResolvedValue(colombia)
+  renderPage('/?country=COL')
+  const administrative = await screen.findByRole('region', { name: 'Administrative indicators' })
+  expect(within(administrative).getByText('Regulatory quality')).toBeInTheDocument()
+  expect(within(administrative).queryByText('Inflation')).not.toBeInTheDocument()
+  const economic = screen.getByRole('region', { name: 'Economic indicators' })
+  expect(within(economic).getByText('Inflation')).toBeInTheDocument()
 })

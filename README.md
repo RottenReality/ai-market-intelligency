@@ -66,6 +66,7 @@ cd frontend && npx vitest run && npm run lint
 
 ## Documentation
 
+- [Methodology](docs/methodology.md): the 12 CAGE indicators, scoring rules and data sources, for non-developers
 - [Architecture](docs/architecture.md)
 - [Design spec](docs/specs/2026-10-25-cage-market-accessibility-design.md)
 - [Implementation plan](docs/plans/2026-10-25-implementation-plan.md)

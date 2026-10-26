@@ -20,10 +20,21 @@ export interface IndicatorResult {
   sources: Source[]
 }
 
+export interface Dimension {
+  id: DimensionId
+  name: string
+  score: number | null
+  available: number
+  total: number
+}
+
 export interface Scorecard {
   country: { iso3: string; name: string }
   home: string
   indicators: IndicatorResult[]
+  dimensions: Dimension[]
+  accessibility: number | null
+  accessibility_reason: string | null
 }
 
 export interface CountrySummary {
