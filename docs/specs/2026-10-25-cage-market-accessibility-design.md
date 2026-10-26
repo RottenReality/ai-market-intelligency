@@ -112,7 +112,7 @@ frontend/  React + TS (Vite)  ──/api (same origin via proxy)──►  backe
 | POST | `/api/countries/{iso3}/explanation` | yes | generate (or return cached) explanation |
 | GET | `/api/reports/pdf?iso3=…` | yes | PDF file |
 
-Errors use FastAPI's default `{"detail": …}`: 404 for an unknown country, 409 for "no data collected yet" and 502 for a failed LLM call.
+Errors use FastAPI's default `{"detail": …}`: 404 for an unknown country, 409 for "no data collected yet", 502 for a failed LLM call and 503 when no LLM provider is configured.
 
 ## 5. Tech stack
 
