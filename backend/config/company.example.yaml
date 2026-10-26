@@ -1,0 +1,8 @@
+# Example company profile (fictional). Copy to company.yaml (gitignored) for the real one.
+name: Example Restaurant Marketing Co.
+home_country: USA
+home_timezone: America/Los_Angeles
+# Languages the company can sell and give support in (ISO 639-1).
+supported_languages: [en]
+# Channels the company's product uses to reach customers: sms, email, whatsapp, ...
+channels: [sms, email]

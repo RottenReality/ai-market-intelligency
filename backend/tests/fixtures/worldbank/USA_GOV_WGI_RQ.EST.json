@@ -1,0 +1,27 @@
+[
+ {
+  "page": 1,
+  "pages": 1,
+  "per_page": 50,
+  "total": 1,
+  "sourceid": null,
+  "lastupdated": "2026-09-25"
+ },
+ [
+  {
+   "indicator": {
+    "id": "GOV_WGI_RQ.EST",
+    "value": "Regulatory Quality - Governance estimate (approx. -2.5 to +2.5)"
+   },
+   "country": {
+    "id": "US",
+    "value": "United States"
+   },
+   "countryiso3code": "USA",
+   "date": "2025",
+   "value": 1.0060452,
+   "obs_status": "",
+   "decimal": 1
+  }
+ ]
+]

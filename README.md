@@ -39,7 +39,19 @@ npm install
 npm run dev
 ```
 
+Collect data before opening the app (World Bank indicators for every country in `backend/config/countries.yaml` plus the home country from the company profile):
+
+```bash
+cd backend
+uv run --env-file .env python -m app.cli collect --all
+```
+
 The frontend proxies `/api` to the backend, so open http://localhost:5173 and sign in with `APP_USERNAME` and the password you hashed.
+
+## Configuration
+
+- `backend/config/countries.yaml`: target countries (ISO3 code, name, main languages, business timezone). Adding a country = adding one line, then running `collect`.
+- `backend/config/company.example.yaml` / `.md`: a fictional company profile (home country, home timezone, supported languages, channels, description). Put the real profile in `company.yaml` / `company.md`: they are gitignored and loaded instead of the example.
 
 ## Login
 
