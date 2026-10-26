@@ -65,3 +65,14 @@ def test_changed_data_changes_cache_key():
 def test_changed_profile_changes_cache_key():
     other = replace(PROFILE, description_md="A different company.")
     assert cache_key(colombia_scorecard(), PROFILE) != cache_key(colombia_scorecard(), other)
+
+
+def test_guard_bug_is_not_reported_as_an_ai_failure(cache, monkeypatch):
+    from app.explanation import service
+
+    def broken_guard(*_args, **_kwargs):
+        raise ValueError("guard bug")
+
+    monkeypatch.setattr(service, "find_unsupported_numbers", broken_guard)
+    with pytest.raises(ValueError, match="guard bug"):
+        explain(colombia_scorecard(), PROFILE, model=FakeModel([CLEAN]), cache=cache)
