@@ -1,0 +1,34 @@
+# Production stack: an isolated compose project ("ami") with no published host ports.
+# Public HTTPS comes from the Cloudflare tunnel. See docs/deploy.md.
+name: ami
+
+services:
+  api:
+    build: ../backend
+    env_file: .env
+    environment:
+      DB_PATH: /data/app.sqlite
+      TRUST_PROXY: "true"
+      COOKIE_SECURE: "true"
+    volumes:
+      - app_data:/data
+    restart: unless-stopped
+
+  web:
+    build: ../frontend
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    # Quick tunnel: random *.trycloudflare.com address that changes only when this container
+    # restarts. For a stable address with your own domain, use instead:
+    #   command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
+    command: tunnel --no-autoupdate --url http://web:80
+    depends_on:
+      - web
+    restart: unless-stopped
+
+volumes:
+  app_data:

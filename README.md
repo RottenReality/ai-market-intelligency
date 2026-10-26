@@ -4,7 +4,7 @@ A web tool that estimates **how accessible a foreign country is** for a company 
 
 The model is country-agnostic: adding a country is a config change, not a code change.
 
-> Status: in development. See the [design spec](docs/specs/2026-10-25-cage-market-accessibility-design.md) and the [implementation plan](docs/plans/2026-10-25-implementation-plan.md).
+> Status: feature-complete except the LLM provider adapter. See the [design spec](docs/specs/2026-10-25-cage-market-accessibility-design.md) and the [implementation plan](docs/plans/2026-10-25-implementation-plan.md).
 
 ## Stack
 
@@ -72,9 +72,14 @@ cd backend && uv run pytest && uv run ruff check .
 cd frontend && npx vitest run && npm run lint
 ```
 
+## Deployment
+
+The app runs on a VPS with Docker Compose behind a Cloudflare Tunnel (no open ports, HTTPS from Cloudflare), and redeploys automatically after CI passes on `main`. See [docs/deploy.md](docs/deploy.md).
+
 ## Documentation
 
 - [Methodology](docs/methodology.md): the 12 CAGE indicators, scoring rules and data sources, for non-developers
 - [Architecture](docs/architecture.md)
+- [Deployment](docs/deploy.md)
 - [Design spec](docs/specs/2026-10-25-cage-market-accessibility-design.md)
 - [Implementation plan](docs/plans/2026-10-25-implementation-plan.md)
