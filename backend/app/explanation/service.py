@@ -25,6 +25,14 @@ def _retry_prompt(prompt: str, unsupported: list[str]) -> str:
     )
 
 
+def _generate(model: ExplanationModel, prompt: str) -> str:
+    # Only the model call is wrapped: a bug in our own code must not look like an AI outage.
+    try:
+        return model.generate(prompt).strip()
+    except Exception as error:  # providers raise their own error types
+        raise ExplanationFailed(str(error)) from error
+
+
 def explain(
     scorecard: Scorecard,
     profile: CompanyProfile,
@@ -40,14 +48,11 @@ def explain(
 
     allowed = numbers_in(data_block(scorecard))
     prompt = build_prompt(scorecard, profile)
-    try:
-        text = model.generate(prompt).strip()
+    text = _generate(model, prompt)
+    unsupported = find_unsupported_numbers(text, allowed)
+    if unsupported:
+        text = _generate(model, _retry_prompt(prompt, unsupported))
         unsupported = find_unsupported_numbers(text, allowed)
-        if unsupported:
-            text = model.generate(_retry_prompt(prompt, unsupported)).strip()
-            unsupported = find_unsupported_numbers(text, allowed)
-    except Exception as error:  # any provider or network failure
-        raise ExplanationFailed(str(error)) from error
 
     explanation = Explanation(
         iso3=scorecard.country.iso3,
