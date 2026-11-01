@@ -2,3 +2,20 @@ iso3,metric,value,year,source_name,source_url
 COL,tax_treaty_with_home,no,2026,PwC Worldwide Tax Summaries,https://taxsummaries.pwc.com/colombia/corporate/withholding-taxes
 COL,trade_agreement_with_home,yes,2012,USTR (US-Colombia Trade Promotion Agreement),https://ustr.gov/trade-agreements/free-trade-agreements/colombia-tpa
 COL,social_media_pct,70.4,2025,DataReportal Digital 2026: Colombia,https://datareportal.com/reports/digital-2026-colombia
+COL,english_band,low,2025,EF English Proficiency Index 2025 (score 480),https://www.ef.com/assetscdn/WIBIwq6RdJvcD9bc8RMd/cefcom-epi-site/reports/2025/ef-epi-2025-english.pdf
+COL,whatsapp_pct,92.1,2025,DataReportal Digital 2026: Colombia (GWI Q2 2025; slide 85 Self-declared platform use),https://datareportal.com/reports/digital-2026-colombia
+MEX,tax_treaty_with_home,yes,2026,PwC Worldwide Tax Summaries,https://taxsummaries.pwc.com/mexico/corporate/withholding-taxes
+MEX,trade_agreement_with_home,yes,2020,USTR (USMCA),https://ustr.gov/trade-agreements/free-trade-agreements
+MEX,social_media_pct,74.9,2025,DataReportal Digital 2026: Mexico,https://datareportal.com/reports/digital-2026-mexico
+MEX,english_band,very_low,2025,EF English Proficiency Index 2025 (score 440),https://www.ef.com/assetscdn/WIBIwq6RdJvcD9bc8RMd/cefcom-epi-site/reports/2025/ef-epi-2025-english.pdf
+MEX,whatsapp_pct,92.6,2025,DataReportal Digital 2025 July Global Statshot (GWI Q1 2025; verify in report slides),https://datareportal.com/reports/digital-2025-july-global-statshot
+ESP,tax_treaty_with_home,yes,2026,PwC Worldwide Tax Summaries,https://taxsummaries.pwc.com/spain/corporate/withholding-taxes
+ESP,trade_agreement_with_home,no,2026,USTR free trade agreements list (Spain/EU not listed),https://ustr.gov/trade-agreements/free-trade-agreements
+ESP,social_media_pct,81.4,2025,DataReportal Digital 2026: Spain,https://datareportal.com/reports/digital-2026-spain
+ESP,english_band,moderate,2025,EF English Proficiency Index 2025 (score 540),https://www.ef.com/assetscdn/WIBIwq6RdJvcD9bc8RMd/cefcom-epi-site/reports/2025/ef-epi-2025-english.pdf
+ESP,whatsapp_pct,90.4,2025,DataReportal Digital 2025 July Global Statshot (GWI Q1 2025; verify in report slides),https://datareportal.com/reports/digital-2025-july-global-statshot
+CHL,tax_treaty_with_home,yes,2023,PwC Worldwide Tax Summaries (treaty in force 19 Dec 2023),https://taxsummaries.pwc.com/chile/corporate/withholding-taxes
+CHL,trade_agreement_with_home,yes,2004,USTR (US-Chile FTA),https://ustr.gov/trade-agreements/free-trade-agreements
+CHL,social_media_pct,81.7,2025,DataReportal Digital 2026: Chile,https://datareportal.com/reports/digital-2026-chile
+CHL,english_band,moderate,2025,EF English Proficiency Index 2025 (score 517),https://www.ef.com/assetscdn/WIBIwq6RdJvcD9bc8RMd/cefcom-epi-site/reports/2025/ef-epi-2025-english.pdf
+CHL,whatsapp_pct,92.4,2025,DataReportal Digital 2025 July Global Statshot (GWI Q1 2025; verify in report slides),https://datareportal.com/reports/digital-2025-july-global-statshot
