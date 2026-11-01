@@ -3,11 +3,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.auth.routes import require_user
-from app.deps import get_explanation_cache, get_explanation_model
+from app.deps import get_explanation_cache
 from app.evidence.store import EvidenceStore
 from app.explanation.cache import Explanation, ExplanationCache
-from app.explanation.model import ExplanationModel
-from app.explanation.service import ExplanationFailed, cache_key, explain
+from app.explanation.service import cache_key
 from app.profile.company import CompanyProfile
 from app.profile.countries import Country
 from app.scoring.routes import CountriesDep, ProfileDep, StoreDep, load_inputs, resolve_country
@@ -16,7 +15,6 @@ from app.scoring.scorecard import Scorecard, build_scorecard
 router = APIRouter(tags=["explanation"], dependencies=[Depends(require_user)])
 
 CacheDep = Annotated[ExplanationCache, Depends(get_explanation_cache)]
-ModelDep = Annotated[ExplanationModel | None, Depends(get_explanation_model)]
 
 
 def load_scorecard(
@@ -41,18 +39,6 @@ def get_explanation(
 
 
 @router.post("/countries/{iso3}/explanation")
-def create_explanation(
-    iso3: str,
-    countries: CountriesDep,
-    store: StoreDep,
-    profile: ProfileDep,
-    cache: CacheDep,
-    model: ModelDep,
-) -> Explanation:
-    scorecard = load_scorecard(iso3, countries, store, profile)
-    if model is None:
-        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "AI is not configured")
-    try:
-        return explain(scorecard, profile, model=model, cache=cache)
-    except ExplanationFailed as error:
-        raise HTTPException(status.HTTP_502_BAD_GATEWAY, "The AI service failed") from error
+def create_explanation() -> Explanation:
+    # Replaced by the AI analysis API (slice 2); kept answering until the module is removed.
+    raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "AI is not configured")

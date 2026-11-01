@@ -3,11 +3,12 @@
 from functools import lru_cache
 from typing import Annotated
 
+import httpx2
 from fastapi import Depends
 
+from app.ai.providers import ProviderId, TextModel, build_models
 from app.evidence.store import EvidenceStore
 from app.explanation.cache import ExplanationCache
-from app.explanation.model import ExplanationModel, ModelNotConfigured, get_model
 from app.profile.company import CompanyProfile, load_profile
 from app.profile.countries import Country, load_countries
 from app.profile.store import ProfileStore, effective_profile
@@ -42,11 +43,13 @@ def get_explanation_cache(
     return ExplanationCache(settings.db_path)
 
 
-def get_explanation_model(
+@lru_cache
+def get_http_client() -> httpx2.Client:
+    return httpx2.Client()
+
+
+def get_ai_models(
     settings: Annotated[Settings, Depends(get_settings)],
-) -> ExplanationModel | None:
-    """The configured LLM, or None when no provider is set (the API then answers 503)."""
-    try:
-        return get_model(settings)
-    except ModelNotConfigured:
-        return None
+) -> dict[ProviderId, TextModel]:
+    """The AI providers that have an API key configured (tests override this with fakes)."""
+    return build_models(settings, get_http_client())

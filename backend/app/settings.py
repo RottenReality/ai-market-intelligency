@@ -20,9 +20,10 @@ class Settings:
     db_path: Path
     config_dir: Path
     data_dir: Path
-    llm_provider: str | None
-    llm_api_key: str | None
-    llm_model: str | None
+    gemini_api_key: str | None = None
+    gemini_model: str = "gemini-3.8-flash"
+    groq_api_key: str | None = None
+    groq_model: str = "openai/gpt-oss-120b"
 
 
 def _flag(value: str | None) -> bool:
@@ -45,7 +46,8 @@ def load_settings(env: Mapping[str, str] = os.environ) -> Settings:
         db_path=Path(env.get("DB_PATH", "data/app.sqlite")),
         config_dir=Path(env.get("CONFIG_DIR", "config")),
         data_dir=Path(env.get("DATA_DIR", "data")),
-        llm_provider=env.get("LLM_PROVIDER") or None,
-        llm_api_key=env.get("LLM_API_KEY") or None,
-        llm_model=env.get("LLM_MODEL") or None,
+        gemini_api_key=env.get("GEMINI_API_KEY") or None,
+        gemini_model=env.get("GEMINI_MODEL") or "gemini-3.8-flash",
+        groq_api_key=env.get("GROQ_API_KEY") or None,
+        groq_model=env.get("GROQ_MODEL") or "openai/gpt-oss-120b",
     )

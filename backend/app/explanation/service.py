@@ -1,12 +1,16 @@
 import hashlib
 from datetime import UTC, datetime
+from typing import Protocol
 
 from app.explanation.cache import Explanation, ExplanationCache
 from app.explanation.guard import find_unsupported_numbers, numbers_in
-from app.explanation.model import ExplanationModel
 from app.explanation.prompt import build_prompt, data_block
 from app.profile.company import CompanyProfile, profile_hash
 from app.scoring.scorecard import Scorecard
+
+
+class ExplanationModel(Protocol):  # removed with this module in the AI analysis slice
+    def generate(self, prompt: str) -> str: ...
 
 
 class ExplanationFailed(RuntimeError):

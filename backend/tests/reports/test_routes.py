@@ -1,12 +1,15 @@
-from app.deps import get_explanation_model
+from app.deps import get_ai_models
 from app.evidence.store import EvidenceStore
 from tests.explanation.test_prompt import FULL
 from tests.scoring.evidence_factory import USA, evidence
 
 
 class ExplodingModel:
-    def generate(self, prompt: str) -> str:
-        raise AssertionError("the PDF export must never call the LLM")
+    provider = "gemini"
+    model = "test"
+
+    def complete_json(self, prompt: str) -> str:
+        raise AssertionError("the PDF export must never call the AI")
 
 
 def seed(settings):
@@ -28,7 +31,7 @@ def test_pdf_endpoint_returns_pdf_with_attachment_header(auth_client, settings):
 
 def test_pdf_endpoint_never_calls_the_model(auth_client, settings):
     seed(settings)
-    auth_client.app.dependency_overrides[get_explanation_model] = lambda: ExplodingModel()
+    auth_client.app.dependency_overrides[get_ai_models] = lambda: {"gemini": ExplodingModel()}
     assert auth_client.get("/api/reports/pdf", params={"iso3": "COL"}).status_code == 200
 
 
