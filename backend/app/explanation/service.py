@@ -2,8 +2,8 @@ import hashlib
 from datetime import UTC, datetime
 from typing import Protocol
 
-from app.explanation.cache import Explanation, ExplanationCache
 from app.analysis.guard import find_unsupported_numbers, numbers_in
+from app.explanation.cache import Explanation, ExplanationCache
 from app.explanation.prompt import build_prompt, data_block
 from app.profile.company import CompanyProfile, profile_hash
 from app.scoring.scorecard import Scorecard

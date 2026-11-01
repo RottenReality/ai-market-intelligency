@@ -25,7 +25,7 @@ def test_clean_first_answer_uses_one_call():
 
 def test_malformed_then_valid_uses_two_calls():
     model = FakeModel(["not json", country_content()])
-    content, flagged = run(model)
+    _content, flagged = run(model)
     assert (flagged, len(model.prompts)) == (False, 2)
     assert "JSON" in model.prompts[1]
 
@@ -37,14 +37,14 @@ def test_malformed_twice_raises_unreadable():
 
 def test_unsupported_numbers_retry_then_clean_is_not_flagged():
     model = FakeModel([INVENTED, country_content()])
-    content, flagged = run(model)
+    _content, flagged = run(model)
     assert (flagged, len(model.prompts)) == (False, 2)
     assert "20%" in model.prompts[1]
 
 
 def test_unsupported_numbers_twice_is_flagged():
     model = FakeModel([INVENTED, INVENTED])
-    content, flagged = run(model)
+    _content, flagged = run(model)
     assert (flagged, len(model.prompts)) == (True, 2)
 
 
