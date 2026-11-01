@@ -4,7 +4,7 @@ A web tool that estimates **how accessible a foreign country is** for a company 
 
 The model is country-agnostic: adding a country is a config change, not a code change.
 
-> Status: feature-complete except the LLM provider adapter. See the [design spec](docs/specs/2026-10-25-cage-market-accessibility-design.md) and the [implementation plan](docs/plans/2026-10-25-implementation-plan.md).
+> Design: [original spec](docs/specs/2026-10-25-cage-market-accessibility-design.md) and [AI analysis & company profile spec](docs/specs/2026-11-01-ai-analysis-and-company-profile-design.md).
 
 ## Stack
 
@@ -51,7 +51,8 @@ The frontend proxies `/api` to the backend, so open http://localhost:5173 and si
 ## Features
 
 - **Scorecard:** pick a country to see its Market Accessibility %, the four CAGE dimensions (radar chart) and all 12 indicators with raw values, scores and sources.
-- **AI explanation:** on the scorecard, *Explain* asks an LLM for a short summary written only from the numbers on screen. Every number in the answer is checked against the data; if one can't be verified, the AI gets one retry, and if it still fails the explanation is marked for review. Explanations are saved and reused until the data or the company profile changes. The LLM provider is configured with `LLM_PROVIDER`, `LLM_API_KEY` and `LLM_MODEL`. Without them, the button reports that AI is not configured.
+- **AI analysis (free):** on the scorecard, choose **Gemini** or **Groq** and click *Generate* for a written analysis: executive summary, why each CAGE dimension scored as it did, main barriers and opportunities, and a recommendation with next steps. The AI only sees the numbers on screen and the company description; every number in its answer is checked against the data (one retry, then the analysis is flagged for review). One analysis is saved per country and marked *outdated* when the data or the company profile changes.
+  - Free API keys: [Google AI Studio](https://aistudio.google.com/apikey) (`GEMINI_API_KEY`, default model `gemini-3.8-flash`) and [Groq](https://console.groq.com/keys) (`GROQ_API_KEY`, default model `openai/gpt-oss-120b`). Only providers with a key appear in the menu. Note: Google may use free-tier Gemini inputs to improve its products; prefer Groq if the company description is confidential.
 - **Company profile:** the *Company* page edits the company's name, description, languages and channels. Languages and channels feed C1 and C2, so scores update as soon as you save; the description is background for the AI. Edits are stored in the app's database (never in git); *Reset* goes back to the file profile. The home country and time zone stay in `backend/config/company.yaml` because changing them needs a new `collect`.
 - **Compare:** select several countries to see a ranking, an overlaid CAGE radar (top 3) and a values table. A "Data" column shows how many indicators each country has, because missing indicators are left out of the averages.
 

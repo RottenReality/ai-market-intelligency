@@ -1,6 +1,7 @@
 # CAGE Market Accessibility Tool: Design Spec
 
 - **Status:** draft v3 for review · 2026-10-25
+- **Superseded in part:** the AI explanation (§4 LLM, §4.2 explanation in the PDF, slice 5) is replaced by `docs/specs/2026-11-01-ai-analysis-and-company-profile-design.md` (free Gemini/Groq providers, structured AI analysis, editable company profile).
 - **Living document:** a feature branch may update this spec when it learns something. The change is committed with `docs(spec): …`.
 - **Public repo rule:** no client or company names, credentials or private data in the repo. Company-specific settings live in gitignored files (see §3.3).
 
