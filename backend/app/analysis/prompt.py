@@ -69,3 +69,69 @@ def country_prompt(scorecard: Scorecard, profile: CompanyProfile) -> str:
         f"{instructions}\n\n{RULES}\n\nCOMPANY:\n{profile.description_md}\n\n"
         f"DATA:\n{country_data_block(scorecard)}\n"
     )
+
+
+COMPARISON_INSTRUCTIONS = """You are a market-entry analyst writing for business readers. Using the
+CAGE distance framework, compare how accessible these countries are for the company described
+below, which sells its services remotely from {home}. The ranking is already calculated in DATA:
+explain it, do not change it.
+
+Return JSON with exactly these keys:
+- "summary": 80-130 words on what separates the countries and what it means for the company.
+- "ranking": one entry per country, {{"iso3": "<code>", "explanation": "<one or two sentences
+  on why it ranks where it does>"}}.
+- "key_differences": 2-4 short items naming the differences that matter most."""
+
+
+def _ranked(values: dict[str, int | None]) -> dict[str, tuple[int, int | None]]:
+    """(rank, points behind the leader) per key; missing values rank last with no gap."""
+    order = sorted(values, key=lambda k: (values[k] is None, -(values[k] or 0)))
+    leader = values[order[0]] if order else None
+    return {
+        key: (position, None if values[key] is None or leader is None else leader - values[key])
+        for position, key in enumerate(order, start=1)
+    }
+
+
+def comparison_data(scorecards: list[Scorecard]) -> dict:
+    overall = _ranked({c.country.iso3: _rounded(c.accessibility) for c in scorecards})
+    dimension_ranks = {
+        name: _ranked({
+            c.country.iso3: _rounded(next(d.score for d in c.dimensions if d.name == name))
+            for c in scorecards
+        })
+        for name in DIMENSION_NAMES.values()
+    }
+    countries = []
+    for card in sorted(scorecards, key=lambda c: overall[c.country.iso3][0]):
+        code = card.country.iso3
+        rank, gap = overall[code]
+        countries.append({
+            "iso3": code,
+            "name": card.country.name,
+            "market_accessibility": _rounded(card.accessibility),
+            "rank": rank,
+            "points_behind_leader": gap,
+            "dimensions": {
+                d.name: {
+                    "score": _rounded(d.score),
+                    "rank": dimension_ranks[d.name][code][0],
+                    "points_behind_leader": dimension_ranks[d.name][code][1],
+                }
+                for d in card.dimensions
+            },
+            "indicator_scores": {i.id: _rounded(i.score) for i in card.indicators},
+        })
+    return {"home_country": scorecards[0].home if scorecards else None, "countries": countries}
+
+
+def comparison_data_block(scorecards: list[Scorecard]) -> str:
+    return json.dumps(comparison_data(scorecards), indent=1, ensure_ascii=False)
+
+
+def comparison_prompt(scorecards: list[Scorecard], profile: CompanyProfile) -> str:
+    instructions = COMPARISON_INSTRUCTIONS.format(home=scorecards[0].home)
+    return (
+        f"{instructions}\n\n{RULES}\n\nCOMPANY:\n{profile.description_md}\n\n"
+        f"DATA:\n{comparison_data_block(scorecards)}\n"
+    )
