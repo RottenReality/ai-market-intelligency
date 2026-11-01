@@ -63,3 +63,17 @@ export interface Explanation {
   flagged: boolean
   created_at: string
 }
+
+export interface ProfileEdits {
+  name: string
+  description: string
+  supported_languages: string[]
+  channels: string[]
+}
+
+export interface Profile extends ProfileEdits {
+  home_country: string
+  home_timezone: string
+  source: 'saved' | 'file'
+  options: { languages: string[]; channels: string[] }
+}

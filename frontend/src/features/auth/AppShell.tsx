@@ -34,6 +34,9 @@ export function AppShell() {
               <NavLink to="/compare" className={navClass}>
                 Compare
               </NavLink>
+              <NavLink to="/company" className={navClass}>
+                Company
+              </NavLink>
             </nav>
           </div>
           <div className="flex items-center gap-3 text-sm">
