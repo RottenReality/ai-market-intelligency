@@ -4,6 +4,7 @@ from app.auth.routes import router as auth_router
 from app.auth.throttle import LoginThrottle
 from app.comparison.routes import router as comparison_router
 from app.explanation.routes import router as explanation_router
+from app.profile.routes import router as profile_router
 from app.reports.routes import router as reports_router
 from app.scoring.routes import router as scoring_router
 
@@ -22,6 +23,7 @@ def create_app() -> FastAPI:
     api.include_router(comparison_router)
     api.include_router(explanation_router)
     api.include_router(reports_router)
+    api.include_router(profile_router)
     app.include_router(api)
     return app
 
