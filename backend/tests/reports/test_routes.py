@@ -1,6 +1,6 @@
 from app.deps import get_ai_models
 from app.evidence.store import EvidenceStore
-from tests.explanation.test_prompt import FULL
+from tests.analysis.fixtures import FULL
 from tests.scoring.evidence_factory import USA, evidence
 
 

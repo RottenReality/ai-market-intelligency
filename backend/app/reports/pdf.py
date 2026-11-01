@@ -8,7 +8,7 @@ import matplotlib
 from fpdf import FPDF
 from fpdf.fonts import FontFace
 
-from app.explanation.cache import Explanation
+from app.analysis.service import CountryAnalysis
 from app.profile.company import CompanyProfile
 from app.reports.charts import radar_png, ranking_png
 from app.scoring.display import format_raw, format_score
@@ -104,7 +104,7 @@ def _ranking(pdf: FPDF, cards: list[Scorecard]) -> None:
         pdf.image(BytesIO(radar_png(series)), w=110)
 
 
-def _country(pdf: FPDF, card: Scorecard, explanation: Explanation | None) -> None:
+def _country(pdf: FPDF, card: Scorecard, explanation: CountryAnalysis | None) -> None:
     pdf.add_page()
     _heading(pdf, card.country.name, size=18)
     _paragraph(pdf, _accessibility_line(card), 13)
@@ -136,7 +136,7 @@ def _country(pdf: FPDF, card: Scorecard, explanation: Explanation | None) -> Non
     if explanation.flagged:
         _paragraph(pdf, "Note: some numbers in this explanation could not be verified against "
                         "the data. Review before using.", 9, (180, 83, 9))
-    _paragraph(pdf, explanation.text, 10)
+    _paragraph(pdf, explanation.content.executive_summary, 10)
     _paragraph(pdf, f"AI-generated on {explanation.created_at[:10]} from the scores above.", 8,
                MUTED)
 
@@ -153,7 +153,7 @@ def _methodology(pdf: FPDF) -> None:
 
 def build_report(
     scorecards: list[Scorecard],
-    explanations: dict[str, Explanation | None],
+    explanations: dict[str, CountryAnalysis | None],
     profile: CompanyProfile,
     generated_at: datetime,
 ) -> bytes:

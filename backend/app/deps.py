@@ -7,8 +7,8 @@ import httpx2
 from fastapi import Depends
 
 from app.ai.providers import ProviderId, TextModel, build_models
+from app.analysis.store import AnalysisStore
 from app.evidence.store import EvidenceStore
-from app.explanation.cache import ExplanationCache
 from app.profile.company import CompanyProfile, load_profile
 from app.profile.countries import Country, load_countries
 from app.profile.store import ProfileStore, effective_profile
@@ -37,10 +37,10 @@ def get_store(settings: Annotated[Settings, Depends(get_settings)]) -> EvidenceS
     return EvidenceStore(settings.db_path)
 
 
-def get_explanation_cache(
+def get_analysis_store(
     settings: Annotated[Settings, Depends(get_settings)],
-) -> ExplanationCache:
-    return ExplanationCache(settings.db_path)
+) -> AnalysisStore:
+    return AnalysisStore(settings.db_path)
 
 
 @lru_cache

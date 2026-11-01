@@ -4,13 +4,15 @@ from pathlib import Path
 
 from pypdf import PdfReader
 
-from app.explanation.cache import Explanation
+from app.analysis.schema import CountryAnalysisContent
+from app.analysis.service import CountryAnalysis
 from app.profile.company import load_profile
 from app.profile.countries import Country
 from app.reports.pdf import build_report
 from app.scoring.indicators import Inputs
 from app.scoring.scorecard import build_scorecard
-from tests.explanation.test_prompt import FULL, colombia_scorecard
+from tests.analysis.fakes import country_content
+from tests.analysis.fixtures import FULL, colombia_scorecard
 from tests.scoring.evidence_factory import USA, evidence
 
 PROFILE = load_profile(Path("config"))
@@ -27,8 +29,12 @@ def pages_text(pdf: bytes) -> list[str]:
     return [page.extract_text() for page in PdfReader(BytesIO(pdf)).pages]
 
 
-def explanation(text: str, flagged: bool = False) -> Explanation:
-    return Explanation(iso3="COL", text=text, flagged=flagged, created_at="2026-10-25T10:00:00+00:00")
+def explanation(text: str, flagged: bool = False) -> CountryAnalysis:
+    return CountryAnalysis(
+        iso3="COL", provider="groq", provider_label="Groq", model="openai/gpt-oss-120b",
+        created_at="2026-11-01T10:00:00+00:00", flagged=flagged, outdated=False,
+        content=CountryAnalysisContent.model_validate(country_content(executive_summary=text)),
+    )
 
 
 def test_single_country_report_contains_name_score_and_indicator_ids():

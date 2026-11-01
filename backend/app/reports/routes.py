@@ -3,10 +3,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Response
 
+from app.analysis.routes import AnalysisStoreDep, load_scorecard
+from app.analysis.service import get_country_analysis
 from app.auth.routes import require_user
 from app.comparison.routes import parse_codes
-from app.explanation.routes import CacheDep, load_scorecard
-from app.explanation.service import cache_key
 from app.reports.pdf import build_report
 from app.scoring.routes import CountriesDep, ProfileDep, StoreDep
 
@@ -19,12 +19,12 @@ def pdf_report(
     countries: CountriesDep,
     store: StoreDep,
     profile: ProfileDep,
-    cache: CacheDep,
+    analyses: AnalysisStoreDep,
 ) -> Response:
-    """Build the PDF from stored data and saved explanations only: it never calls the LLM."""
+    """Build the PDF from stored data and saved analyses only: it never calls the AI."""
     scorecards = [load_scorecard(code, countries, store, profile) for code in parse_codes(iso3)]
     explanations = {
-        card.country.iso3: cache.get(card.country.iso3, cache_key(card, profile))
+        card.country.iso3: get_country_analysis(card, profile, analyses)
         for card in scorecards
     }
     now = datetime.now(UTC)
