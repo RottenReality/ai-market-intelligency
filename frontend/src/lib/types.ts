@@ -98,3 +98,18 @@ export interface Profile extends ProfileEdits {
   source: 'saved' | 'file'
   options: { languages: string[]; channels: string[] }
 }
+
+export interface RankedExplanation {
+  iso3: string
+  name: string
+  accessibility: number | null
+  rank: number
+  explanation: string
+}
+
+export interface ComparisonInsight extends AnalysisMeta {
+  countries: string[]
+  summary: string
+  ranking: RankedExplanation[]
+  key_differences: string[]
+}

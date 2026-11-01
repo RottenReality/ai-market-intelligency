@@ -9,6 +9,11 @@ import { ComparisonPage } from './ComparisonPage'
 import { getComparison } from './api'
 
 vi.mock('./api')
+vi.mock('@/features/analysis/api', () => ({
+  getProviders: vi.fn().mockResolvedValue([]),
+  getComparisonInsight: vi.fn().mockResolvedValue(null),
+  generateComparisonInsight: vi.fn(),
+}))
 vi.mock('@/features/scorecard/api')
 
 const dims = (c: number, a: number, g: number, e: number) => ({ C: c, A: a, G: g, E: e })

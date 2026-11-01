@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { ComparisonInsightPanel } from '@/features/analysis/ComparisonInsightPanel'
 import { ExportPdfButton } from '@/features/report/ExportPdfButton'
 import { getCountries } from '@/features/scorecard/api'
 import { ApiError } from '@/lib/api'
@@ -84,6 +85,11 @@ export function ComparisonPage() {
         </p>
       )}
       {comparison.data && <ComparisonView countries={comparison.data.countries} />}
+      {comparison.data && (
+        <ComparisonInsightPanel
+          codes={comparison.data.countries.filter((c) => c.has_data).map((c) => c.iso3)}
+        />
+      )}
     </section>
   )
 }
