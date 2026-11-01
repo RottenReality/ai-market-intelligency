@@ -15,9 +15,10 @@ items into a polishing plan (`docs/plans/<date>-polishing-plan.md`) with the tea
   `backend/data/manual_inputs.csv`, re-check tax treaties (PwC) and trade agreements (USTR), then
   run `collect`. *Done when:* the steps are in `docs/methodology.md` and a reminder exists
   (calendar or a scheduled GitHub issue).
-- **Verify the WhatsApp figures (C2).** The current values come from an article citing the
-  DataReportal/GWI report. Confirm them on the "Most used social media platforms" slide of each
-  country report (GWI, internet users aged 16–64) and update source links.
+- **Verify the WhatsApp figures (C2).** Colombia is verified (92.1%, Digital 2026: Colombia,
+  slide 85 "Self-declared platform use", GWI Q2 2025). Mexico, Spain and Chile still come from an
+  article citing the DataReportal/GWI report: confirm them on the same slide of each country's
+  Digital 2026 report and update the source links.
 
 ## Methodology
 
