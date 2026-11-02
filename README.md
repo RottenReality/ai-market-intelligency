@@ -31,7 +31,7 @@ Then run both apps:
 # Backend (http://localhost:8000)
 cd backend
 uv sync
-uv run uvicorn app.main:app --reload --env-file .env
+uv run uvicorn app.main:app --reload   # reads backend/.env by itself
 
 # Frontend (http://localhost:5173), in another terminal
 cd frontend
@@ -43,7 +43,7 @@ Collect data before opening the app (World Bank indicators for every country in 
 
 ```bash
 cd backend
-uv run --env-file .env python -m app.cli collect --all
+uv run python -m app.cli collect --all
 ```
 
 The frontend proxies `/api` to the backend, so open http://localhost:5173 and sign in with `APP_USERNAME` and the password you hashed.
@@ -66,7 +66,7 @@ The frontend proxies `/api` to the backend, so open http://localhost:5173 and si
 
 ## Login
 
-There is one generic user, configured through environment variables (see `backend/.env.example`). Sessions use a signed, httpOnly cookie valid for 8 hours. After 5 failed attempts from the same IP, login is locked for 15 minutes.
+There is one generic user, configured through environment variables (see `backend/.env.example`). The backend reads `backend/.env` on its own; real environment variables, as on the VPS, take precedence. If a required value is missing, the API refuses to start and names it. Sessions use a signed, httpOnly cookie valid for 8 hours. After 5 failed attempts from the same IP, login is locked for 15 minutes.
 
 ## Tests
 
