@@ -14,6 +14,14 @@ async function readDetail(response: Response): Promise<string> {
   try {
     const body = await response.json()
     if (typeof body?.detail === 'string') return body.detail
+    // FastAPI validation errors: a list of {msg} objects, e.g. "Value error, unknown channel: fax".
+    if (Array.isArray(body?.detail)) {
+      const messages = body.detail
+        .map((item: { msg?: unknown }) => item?.msg)
+        .filter((msg: unknown): msg is string => typeof msg === 'string')
+        .map((msg: string) => msg.replace(/^Value error, /, ''))
+      if (messages.length) return messages.join('. ')
+    }
   } catch {
     // Body was empty or not JSON; fall back to the status text.
   }

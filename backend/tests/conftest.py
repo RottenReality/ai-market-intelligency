@@ -24,9 +24,6 @@ def settings(tmp_path: Path) -> Settings:
         db_path=tmp_path / "app.sqlite",
         config_dir=Path("config"),
         data_dir=Path("data"),
-        llm_provider=None,
-        llm_api_key=None,
-        llm_model=None,
     )
 
 

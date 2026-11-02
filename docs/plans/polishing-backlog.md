@@ -30,7 +30,6 @@ items into a polishing plan (`docs/plans/<date>-polishing-plan.md`) with the tea
 
 ## Product
 
-- **LLM provider adapter (plan Task 5.3)** once the provider is chosen.
 - **Fail fast on missing settings.** Starting the API without `APP_PASSWORD_HASH`/`SECRET_KEY`
   currently works until login, which then returns a 500. Validate settings at startup and exit with
   a clear message.

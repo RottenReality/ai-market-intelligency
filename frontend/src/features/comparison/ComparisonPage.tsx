@@ -9,7 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { ComparisonInsightPanel } from '@/features/analysis/ComparisonInsightPanel'
 import { ExportPdfButton } from '@/features/report/ExportPdfButton'
+import { useMissingAnalyses } from '@/features/report/useMissingAnalyses'
 import { getCountries } from '@/features/scorecard/api'
 import { ApiError } from '@/lib/api'
 import { MAX_RADAR_SERIES } from '@/lib/colors'
@@ -39,6 +41,8 @@ export function ComparisonPage() {
     queryFn: () => getComparison(selected),
     enabled: selected.length > 0,
   })
+  const withData = comparison.data?.countries.filter((c) => c.has_data).map((c) => c.iso3) ?? []
+  const missingAnalyses = useMissingAnalyses(withData)
 
   function toggle(iso3: string) {
     const next = selected.includes(iso3)
@@ -51,10 +55,8 @@ export function ComparisonPage() {
     <section className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-xl font-semibold">Compare countries</h1>
-        {comparison.data?.countries.some((c) => c.has_data) && (
-          <ExportPdfButton
-            iso3={comparison.data.countries.filter((c) => c.has_data).map((c) => c.iso3)}
-          />
+        {withData.length > 0 && (
+          <ExportPdfButton iso3={withData} missingAnalyses={missingAnalyses} />
         )}
       </div>
 
@@ -84,6 +86,11 @@ export function ComparisonPage() {
         </p>
       )}
       {comparison.data && <ComparisonView countries={comparison.data.countries} />}
+      {comparison.data && (
+        <ComparisonInsightPanel
+          codes={withData}
+        />
+      )}
     </section>
   )
 }

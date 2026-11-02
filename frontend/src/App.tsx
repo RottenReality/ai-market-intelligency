@@ -17,6 +17,10 @@ const ComparisonPage = lazy(() =>
   import('@/features/comparison/ComparisonPage').then((m) => ({ default: m.ComparisonPage })),
 )
 
+const CompanyPage = lazy(() =>
+  import('@/features/company/CompanyPage').then((m) => ({ default: m.CompanyPage })),
+)
+
 function PageLoading() {
   return <p className="text-sm text-muted-foreground">Loading…</p>
 }
@@ -42,6 +46,14 @@ export default function App() {
                 element={
                   <Suspense fallback={<PageLoading />}>
                     <ComparisonPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="company"
+                element={
+                  <Suspense fallback={<PageLoading />}>
+                    <CompanyPage />
                   </Suspense>
                 }
               />

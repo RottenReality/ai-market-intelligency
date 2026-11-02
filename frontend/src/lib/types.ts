@@ -57,9 +57,59 @@ export interface Comparison {
   countries: ComparedCountry[]
 }
 
-export interface Explanation {
-  iso3: string
-  text: string
-  flagged: boolean
+export interface ProviderInfo {
+  id: string
+  label: string
+  model: string
+}
+
+export interface CountryAnalysisContent {
+  executive_summary: string
+  dimensions: Record<'Cultural' | 'Administrative' | 'Geographic' | 'Economic', string>
+  barriers: string[]
+  opportunities: string[]
+  recommendation: string
+}
+
+export interface AnalysisMeta {
+  provider: string
+  provider_label: string
+  model: string
   created_at: string
+  flagged: boolean
+  outdated: boolean
+}
+
+export interface CountryAnalysis extends AnalysisMeta {
+  iso3: string
+  content: CountryAnalysisContent
+}
+
+export interface ProfileEdits {
+  name: string
+  description: string
+  supported_languages: string[]
+  channels: string[]
+}
+
+export interface Profile extends ProfileEdits {
+  home_country: string
+  home_timezone: string
+  source: 'saved' | 'file'
+  options: { languages: string[]; channels: string[] }
+}
+
+export interface RankedExplanation {
+  iso3: string
+  name: string
+  accessibility: number | null
+  rank: number
+  explanation: string
+}
+
+export interface ComparisonInsight extends AnalysisMeta {
+  countries: string[]
+  summary: string
+  ranking: RankedExplanation[]
+  key_differences: string[]
 }

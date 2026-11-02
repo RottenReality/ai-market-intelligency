@@ -1,4 +1,4 @@
-from app.explanation.guard import find_unsupported_numbers, numbers_in
+from app.analysis.guard import find_unsupported_numbers, numbers_in
 
 ALLOWED = numbers_in('{"Administrative": 49, "income": "$22,250", "internet": "79.3%", "year": 2025}')
 

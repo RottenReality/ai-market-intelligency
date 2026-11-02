@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router'
-import { ExplanationPanel } from '@/features/explanation/ExplanationPanel'
+import { AnalysisPanel } from '@/features/analysis/AnalysisPanel'
 import { ExportPdfButton } from '@/features/report/ExportPdfButton'
+import { useMissingAnalyses } from '@/features/report/useMissingAnalyses'
 import { ApiError } from '@/lib/api'
 import type { Scorecard } from '@/lib/types'
 import { AccessibilitySummary } from './AccessibilitySummary'
@@ -26,6 +27,8 @@ export function ScorecardPage() {
     queryFn: () => getScorecard(iso3),
     enabled: iso3 !== '',
   })
+  const exported = scorecard.data ? [scorecard.data.country.iso3] : []
+  const missingAnalyses = useMissingAnalyses(exported)
 
   return (
     <section className="flex flex-col gap-6">
@@ -39,7 +42,7 @@ export function ScorecardPage() {
               onChange={(code) => setParams({ country: code })}
             />
           )}
-          {scorecard.data && <ExportPdfButton iso3={[scorecard.data.country.iso3]} />}
+          {scorecard.data && <ExportPdfButton iso3={exported} missingAnalyses={missingAnalyses} />}
         </div>
       </div>
 
@@ -63,7 +66,7 @@ function ScorecardView({ scorecard }: { scorecard: Scorecard }) {
         <AccessibilitySummary scorecard={scorecard} />
         <DimensionRadar dimensions={scorecard.dimensions} />
       </div>
-      <ExplanationPanel iso3={scorecard.country.iso3} />
+      <AnalysisPanel iso3={scorecard.country.iso3} />
       {scorecard.dimensions.map((dimension) => (
         <section
           key={dimension.id}
