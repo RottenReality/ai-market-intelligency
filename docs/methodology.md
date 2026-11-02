@@ -68,7 +68,7 @@ The file can be edited in Excel. A Spanish-locale export (`;` separators and dec
 
 ```bash
 cd backend
-uv run --env-file .env python -m app.cli collect --all
+uv run python -m app.cli collect --all
 ```
 
 ## 5. Hofstede data terms

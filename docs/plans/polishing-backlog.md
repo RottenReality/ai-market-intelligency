@@ -30,9 +30,6 @@ items into a polishing plan (`docs/plans/<date>-polishing-plan.md`) with the tea
 
 ## Product
 
-- **Fail fast on missing settings.** Starting the API without `APP_PASSWORD_HASH`/`SECRET_KEY`
-  currently works until login, which then returns a 500. Validate settings at startup and exit with
-  a clear message.
 - **Named tunnel with a domain** for a stable public address (see `docs/deploy.md`).
 - **README screenshots and a demo GIF.**
 - **Time-zone sampling note (minor).** G1 samples once a day; fine for current countries, revisit

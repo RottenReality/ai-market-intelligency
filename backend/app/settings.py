@@ -3,6 +3,10 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
+from dotenv import dotenv_values
+
+# backend/.env, found from this file so it works from any working directory.
+ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
 REQUIRED_VARS = ("APP_USERNAME", "APP_PASSWORD_HASH", "SECRET_KEY")
 
 
@@ -30,7 +34,20 @@ def _flag(value: str | None) -> bool:
     return (value or "").strip().lower() in {"1", "true", "yes"}
 
 
-def load_settings(env: Mapping[str, str] = os.environ) -> Settings:
+def environment(
+    env_file: Path | None = None, base: Mapping[str, str] | None = None
+) -> dict[str, str]:
+    """Values from backend/.env (when it exists) overlaid by the real environment, which wins."""
+    path = env_file or ENV_FILE
+    from_file = dotenv_values(path) if path.is_file() else {}
+    values = {key: value for key, value in from_file.items() if value is not None}
+    values.update(os.environ if base is None else base)
+    return values
+
+
+def load_settings(env: Mapping[str, str] | None = None) -> Settings:
+    if env is None:
+        env = environment()
     missing = [name for name in REQUIRED_VARS if not env.get(name)]
     if missing:
         raise SettingsError(
