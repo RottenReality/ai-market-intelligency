@@ -14,7 +14,9 @@ PROVIDER_URLS: dict[ProviderId, str] = {
     "gemini": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
     "groq": "https://api.groq.com/openai/v1/chat/completions",
 }
-REQUEST_TIMEOUT_SECONDS = 30
+REQUEST_TIMEOUT_SECONDS: dict[ProviderId, int] = {"gemini": 60, "groq": 30}
+# Gemini "thinks" before answering; a short think keeps a comparison well inside its time limit.
+EXTRA_BODY: dict[ProviderId, dict[str, str]] = {"gemini": {"reasoning_effort": "low"}, "groq": {}}
 SERVICE_FAILED = "The AI service failed. Try again."
 
 
@@ -28,6 +30,18 @@ class ProviderInfo:
 class TextModel(Protocol):
     provider: ProviderId
     model: str
+
+    def _timeout_message(self) -> str:
+        message = f"{PROVIDER_LABELS[self.provider]} took too long to answer."
+        if self._alternative:
+            return f"{message} Try again or use {PROVIDER_LABELS[self._alternative]}."
+        return f"{message} Try again."
+
+    def _busy_message(self) -> str:
+        message = f"{PROVIDER_LABELS[self.provider]} is busy right now."
+        if self._alternative:
+            return f"{message} Try again in a few minutes or use {PROVIDER_LABELS[self._alternative]}."
+        return f"{message} Try again in a few minutes."
 
     def complete_json(self, prompt: str) -> str: ...
 
@@ -73,6 +87,18 @@ class OpenAICompatibleModel:
             return f"{message} Try again later or use {PROVIDER_LABELS[self._alternative]}."
         return f"{message} Try again later."
 
+    def _timeout_message(self) -> str:
+        message = f"{PROVIDER_LABELS[self.provider]} took too long to answer."
+        if self._alternative:
+            return f"{message} Try again or use {PROVIDER_LABELS[self._alternative]}."
+        return f"{message} Try again."
+
+    def _busy_message(self) -> str:
+        message = f"{PROVIDER_LABELS[self.provider]} is busy right now."
+        if self._alternative:
+            return f"{message} Try again in a few minutes or use {PROVIDER_LABELS[self._alternative]}."
+        return f"{message} Try again in a few minutes."
+
     def complete_json(self, prompt: str) -> str:
         try:
             response = self._client.post(
@@ -83,9 +109,12 @@ class OpenAICompatibleModel:
                     "messages": [{"role": "user", "content": prompt}],
                     "response_format": {"type": "json_object"},
                     "temperature": 0.3,
+                    **EXTRA_BODY[self.provider],
                 },
-                timeout=REQUEST_TIMEOUT_SECONDS,
+                timeout=REQUEST_TIMEOUT_SECONDS[self.provider],
             )
+        except httpx2.TimeoutException as error:
+            raise AIProviderError(504, self._timeout_message()) from error
         except httpx2.HTTPError as error:
             raise AIProviderError(502, SERVICE_FAILED) from error
         if response.status_code == 429:
@@ -94,6 +123,8 @@ class OpenAICompatibleModel:
             raise AIProviderError(
                 502, f"The {PROVIDER_LABELS[self.provider]} API key was rejected"
             )
+        if response.status_code == 503:  # free models are often overloaded for a few minutes
+            raise AIProviderError(503, self._busy_message())
         if response.status_code >= 400:
             raise AIProviderError(502, SERVICE_FAILED)
         try:

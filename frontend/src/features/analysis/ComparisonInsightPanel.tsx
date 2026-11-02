@@ -47,7 +47,7 @@ export function ComparisonInsightPanel({ codes }: { codes: string[] }) {
           <p className="text-sm text-muted-foreground">AI is not configured</p>
         )}
         {generate.isPending && (
-          <p className="text-sm text-muted-foreground">Writing the insight… this can take up to a minute.</p>
+          <p className="text-sm text-muted-foreground">Writing the insight… this can take up to two minutes.</p>
         )}
         {generate.isError && (
           <p role="alert" className="text-sm text-destructive">

@@ -20,6 +20,7 @@ def test_country_prompt_contains_data_description_shape_and_digit_rule():
     assert country_data_block(colombia_scorecard()) in prompt
     assert PROFILE.description_md in prompt
     assert "Use digits only for numbers that appear in DATA" in prompt
+    assert "exactly as DATA shows it (52, never fifty-two)" in prompt
     for key in ("executive_summary", "dimensions", "barriers", "opportunities", "recommendation"):
         assert key in prompt
 

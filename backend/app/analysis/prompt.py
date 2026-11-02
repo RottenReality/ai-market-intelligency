@@ -8,7 +8,8 @@ from app.scoring.display import format_raw
 from app.scoring.scorecard import DIMENSION_NAMES, Scorecard
 
 RULES = """Rules:
-- Use digits only for numbers that appear in DATA. Write timeframes and quantities in words
+- Use digits only for numbers that appear in DATA. Write each of them
+  exactly as DATA shows it (52, never fifty-two). Write timeframes and quantities in words
   (for example "a short pilot", "within the first months"), never as digits.
 - Do not add facts, figures or percentages from memory.
 - Cite the indicators behind each statement with their IDs in brackets, e.g. [A1].

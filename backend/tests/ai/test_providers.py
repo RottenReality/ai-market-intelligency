@@ -83,13 +83,15 @@ def test_rejected_key(status):
     assert (exc.value.status_code, exc.value.detail) == (502, "The Groq API key was rejected")
 
 
-def test_timeout_maps_to_service_failed():
+def test_timeout_without_alternative():
     def handler(request):
         raise httpx2.ReadTimeout("slow", request=request)
 
     with pytest.raises(AIProviderError) as exc:
-        model_with(handler).complete_json("p")
-    assert (exc.value.status_code, exc.value.detail) == (502, "The AI service failed. Try again.")
+        model_with(handler, "groq").complete_json("p")
+    assert (exc.value.status_code, exc.value.detail) == (
+        504, "Groq took too long to answer. Try again."
+    )
 
 
 def test_server_error_maps_to_service_failed():
@@ -102,3 +104,38 @@ def test_unexpected_body_maps_to_service_failed():
     with pytest.raises(AIProviderError) as exc:
         model_with(lambda r: httpx2.Response(200, json={"nope": True})).complete_json("p")
     assert exc.value.status_code == 502
+
+
+@pytest.mark.parametrize(
+    ("provider", "timeout", "effort"), [("gemini", 60, "low"), ("groq", 30, None)]
+)
+def test_gemini_thinks_briefly_and_gets_more_time(provider, timeout, effort):
+    seen: list[httpx2.Request] = []
+
+    def handler(request):
+        seen.append(request)
+        return ok_reply()
+
+    model_with(handler, provider).complete_json("p")
+    assert seen[0].extensions["timeout"]["read"] == timeout
+    assert json.loads(seen[0].content).get("reasoning_effort") == effort
+
+
+def test_timeout_says_the_ai_took_too_long_and_suggests_the_other():
+    def handler(request):
+        raise httpx2.ReadTimeout("slow", request=request)
+
+    with pytest.raises(AIProviderError) as exc:
+        model_with(handler, "gemini", alternative="groq").complete_json("p")
+    assert (exc.value.status_code, exc.value.detail) == (
+        504, "Gemini took too long to answer. Try again or use Groq."
+    )
+
+
+def test_busy_provider_says_so_and_suggests_the_other():
+    model = model_with(lambda request: httpx2.Response(503, json={"error": {}}), "gemini", "groq")
+    with pytest.raises(AIProviderError) as exc:
+        model.complete_json("p")
+    assert (exc.value.status_code, exc.value.detail) == (
+        503, "Gemini is busy right now. Try again in a few minutes or use Groq."
+    )
