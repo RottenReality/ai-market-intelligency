@@ -1,6 +1,6 @@
 # AI Market Intelligence: CAGE Market Accessibility
 
-A web tool that estimates **how accessible a foreign country is** for a company that sells its services remotely. It applies Pankaj Ghemawat's **CAGE distance framework** (Cultural, Administrative, Geographic, Economic): 12 indicators → 4 dimension scores → one Market Accessibility %. Results come with charts, an AI-written explanation and a PDF report.
+A web tool that estimates **how accessible a foreign country is** for a company that sells its services remotely. It applies Pankaj Ghemawat's **CAGE distance framework** (Cultural, Administrative, Geographic, Economic): 12 indicators → 4 dimension scores → one Market Accessibility %. Results come with charts, an AI-written analysis and a PDF report.
 
 The model is country-agnostic: adding a country is a config change, not a code change.
 
@@ -57,7 +57,7 @@ The frontend proxies `/api` to the backend, so open http://localhost:5173 and si
 - **Company profile:** the *Company* page edits the company's name, description, languages and channels. Languages and channels feed C1 and C2, so scores update as soon as you save; the description is background for the AI. Edits are stored in the app's database (never in git); *Reset* goes back to the file profile. The home country and time zone stay in `backend/config/company.yaml` because changing them needs a new `collect`.
 - **Compare:** select several countries to see a ranking, an overlaid CAGE radar (top 3) and a values table. A "Data" column shows how many indicators each country has, because missing indicators are left out of the averages.
 
-- **PDF report:** *Export PDF* on the scorecard or the comparison downloads a report with a cover, the ranking (for several countries), each country's dimensions, indicators with sources and the saved AI explanation, plus a methodology note. Exporting never calls the AI.
+- **PDF report:** *Export PDF* on the scorecard or the comparison downloads a report with a cover; for several countries, a comparison page (ranking chart and table, a countries × dimensions heat map, the top-3 radar and the saved comparison insight); one page per country (accessibility % and rank, radar, AI executive summary, dimension bars marked with the best compared country, an indicator heat map, the AI sections on each dimension, barriers, opportunities and next steps, and the indicator table with sources); and a methodology note. AI text sits in light-blue boxes with the provider, model and date. Exporting never calls the AI: it uses saved analyses only, and the button notes how many countries have none yet.
 
 ## Configuration
 
