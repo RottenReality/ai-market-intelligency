@@ -86,12 +86,12 @@ def seed(settings):
 
 
 def post(client, codes):
-    return client.post("/api/comparison/insight", json={"iso3": codes, "provider": "gemini"})
+    return client.post("/api/comparison/insight", json={"iso3": codes, "provider": "gpt"})
 
 
 def test_countries_without_data_are_dropped_from_subject(auth_client, settings):
     seed(settings)
-    auth_client.app.dependency_overrides[get_ai_models] = lambda: {"gemini": FakeModel([INSIGHT])}
+    auth_client.app.dependency_overrides[get_ai_models] = lambda: {"gpt": FakeModel([INSIGHT])}
     response = post(auth_client, ["COL", "MEX", "CHL"])  # Chile has no data
     assert response.status_code == 200
     assert response.json()["countries"] == ["COL", "MEX"]
@@ -99,7 +99,7 @@ def test_countries_without_data_are_dropped_from_subject(auth_client, settings):
 
 def test_fewer_than_two_with_data_returns_422(auth_client, settings):
     seed(settings)
-    auth_client.app.dependency_overrides[get_ai_models] = lambda: {"gemini": FakeModel([])}
+    auth_client.app.dependency_overrides[get_ai_models] = lambda: {"gpt": FakeModel([])}
     response = post(auth_client, ["COL", "CHL"])
     assert response.status_code == 422
     assert response.json() == {"detail": "Select at least two countries with data"}
@@ -107,13 +107,13 @@ def test_fewer_than_two_with_data_returns_422(auth_client, settings):
 
 def test_unknown_code_returns_404(auth_client, settings):
     seed(settings)
-    auth_client.app.dependency_overrides[get_ai_models] = lambda: {"gemini": FakeModel([])}
+    auth_client.app.dependency_overrides[get_ai_models] = lambda: {"gpt": FakeModel([])}
     assert post(auth_client, ["COL", "XYZ"]).status_code == 404
 
 
 def test_same_set_any_order_finds_insight(auth_client, settings):
     seed(settings)
-    auth_client.app.dependency_overrides[get_ai_models] = lambda: {"gemini": FakeModel([INSIGHT])}
+    auth_client.app.dependency_overrides[get_ai_models] = lambda: {"gpt": FakeModel([INSIGHT])}
     post(auth_client, ["MEX", "COL"])
     found = auth_client.get("/api/comparison/insight", params={"iso3": "COL,MEX"})
     assert found.status_code == 200
@@ -122,7 +122,7 @@ def test_same_set_any_order_finds_insight(auth_client, settings):
 
 def test_different_set_returns_404(auth_client, settings):
     seed(settings)
-    auth_client.app.dependency_overrides[get_ai_models] = lambda: {"gemini": FakeModel([INSIGHT])}
+    auth_client.app.dependency_overrides[get_ai_models] = lambda: {"gpt": FakeModel([INSIGHT])}
     post(auth_client, ["MEX", "COL"])
     other = auth_client.get("/api/comparison/insight", params={"iso3": "COL,MEX,ESP"})
     assert other.status_code == 404

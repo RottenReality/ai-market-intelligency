@@ -4,7 +4,7 @@ import json
 class FakeModel:
     """Scripted stand-in for an AI provider: returns replies in order and records prompts."""
 
-    def __init__(self, replies, provider: str = "gemini", model: str = "test-model") -> None:
+    def __init__(self, replies, provider: str = "groq", model: str = "test-model") -> None:
         self.replies = list(replies)
         self.prompts: list[str] = []
         self.provider = provider

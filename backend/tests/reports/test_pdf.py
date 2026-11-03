@@ -48,8 +48,8 @@ def analysis(flagged: bool = False, outdated: bool = False, **content) -> Countr
 
 def insight() -> ComparisonInsight:
     return ComparisonInsight(
-        countries=["COL", "MEX"], provider="gemini", provider_label="Gemini",
-        model="gemini-3.8-flash", created_at="2026-11-01T10:00:00+00:00", flagged=False,
+        countries=["COL", "MEX"], provider="groq", provider_label="Groq",
+        model="openai/gpt-oss-120b", created_at="2026-11-01T10:00:00+00:00", flagged=False,
         outdated=False, summary="Mexico leads thanks to its tax treaty [A1].",
         ranking=[
             RankedExplanation(iso3="MEX", name="Mexico", accessibility=60.0, rank=1,
@@ -133,7 +133,7 @@ def test_comparison_page_includes_insight_in_real_order():
     text = all_text(pdf)
     assert text.index("MEXICO-TEXT") < text.index("COLOMBIA-TEXT")
     assert "Tax treaty [A1]" in text
-    assert "AI analysis written by Gemini (gemini-3.8-flash) on 2026-11-01." in text
+    assert "AI analysis written by Groq (openai/gpt-oss-120b) on 2026-11-01." in text
 
 
 def test_unicode_text_renders():

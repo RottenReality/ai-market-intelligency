@@ -51,3 +51,10 @@ def test_outdated_after_profile_change(store):
 def test_not_outdated_when_nothing_changed(store):
     generate_country_analysis(colombia_scorecard(), PROFILE, FakeModel([country_content()]), store)
     assert get_country_analysis(colombia_scorecard(), PROFILE, store).outdated is False
+
+
+def test_analysis_saved_with_gemini_keeps_its_label(store):
+    old = FakeModel([country_content()], provider="gemini", model="gemini-3.8-flash")
+    generate_country_analysis(colombia_scorecard(), PROFILE, old, store)
+    saved = get_country_analysis(colombia_scorecard(), PROFILE, store)
+    assert (saved.provider, saved.provider_label) == ("gemini", "Gemini")
