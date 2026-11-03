@@ -156,3 +156,9 @@ def test_long_ai_text_flows_across_pages():
     text = all_text(long_pdf)
     assert "Economic: Bogotá y Medellín" in text
     assert text.count("expansión") >= 20
+
+
+def test_indicator_table_uses_the_worded_values():
+    text = all_text(build_report([colombia_scorecard()], {}, None, PROFILE, GENERATED))
+    assert "Time difference with home" in text
+    assert "3 h difference" in text

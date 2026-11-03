@@ -29,7 +29,7 @@ Each indicator gets a score from **0 (very hard) to 100 (very accessible)**.
 | A1 | Tax treaty with home country | Yes 100 / No 0 | PwC Worldwide Tax Summaries |
 | A2 | Trade agreement with home country | Yes 100 / No 0 | USTR (or the home country's trade office) |
 | A3 | Regulatory quality | World Bank estimate (−2.5 to +2.5) rescaled to 0–100 | World Bank, Worldwide Governance Indicators |
-| G1 | Working-hours overlap | `(8 − largest hour difference during the year) / 8 × 100` | Computed from official time zones |
+| G1 | Time difference with home (shown as the difference; scored by the working-hours overlap) | `(8 − largest hour difference during the year) / 8 × 100` | Computed from official time zones |
 | G2 | Internet users | % of population | World Bank |
 | G3 | Social media users | % of population | DataReportal |
 | E1 | Income per person vs home | `country income ÷ home income × 100` (purchasing power parity, max 100) | World Bank |

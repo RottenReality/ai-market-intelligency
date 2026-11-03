@@ -27,6 +27,7 @@ def test_country_prompt_contains_data_description_shape_and_digit_rule():
     assert "exactly as DATA shows it (52, never fifty-two)" in prompt
     assert "Every score goes from 0 to 100: higher means easier for the company" in prompt
     assert "Describe each value as its \"meaning\" says" in prompt
+    assert 'write "use WhatsApp", never "prefer" or "rely on"' in prompt
     for key in ("executive_summary", "dimensions", "barriers", "opportunities", "recommendation"):
         assert key in prompt
 

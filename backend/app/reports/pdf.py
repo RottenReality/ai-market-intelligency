@@ -19,7 +19,7 @@ from app.reports.charts import (
     radar_png,
     ranking_png,
 )
-from app.scoring.display import format_raw, format_score
+from app.scoring.display import format_score
 from app.scoring.scorecard import Scorecard
 
 # DejaVu Sans ships with matplotlib and covers any text an explanation may contain
@@ -233,7 +233,7 @@ def _country(
         table.row(["ID", "Indicator", "Value", "Score", "Source"])
         for i in card.indicators:
             source = "; ".join(f"{s.name} ({s.year})" if s.year else s.name for s in i.sources)
-            table.row([i.id, i.name, format_raw(i.raw, i.unit), format_score(i.score),
+            table.row([i.id, i.name, i.display, format_score(i.score),
                        source or "-"])
 
 

@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { formatRaw, formatScore } from '@/lib/format'
+import { formatScore } from '@/lib/format'
 import type { IndicatorResult } from '@/lib/types'
 
 export function IndicatorTable({ indicators }: { indicators: IndicatorResult[] }) {
@@ -16,7 +16,7 @@ export function IndicatorTable({ indicators }: { indicators: IndicatorResult[] }
       <TableHeader>
         <TableRow>
           <TableHead className="w-[38%]">Indicator</TableHead>
-          <TableHead className="w-[14%] text-right">Raw value</TableHead>
+          <TableHead className="w-[14%] text-right">Value</TableHead>
           <TableHead className="w-[10%] text-right">Score</TableHead>
           <TableHead className="w-[38%] pl-6">Source</TableHead>
         </TableRow>
@@ -29,9 +29,12 @@ export function IndicatorTable({ indicators }: { indicators: IndicatorResult[] }
                 <Badge variant="outline">{indicator.id}</Badge>
                 <span>{indicator.name}</span>
               </div>
+              {indicator.meaning && (
+                <p className="mt-1 text-xs leading-snug text-muted-foreground">{indicator.meaning}</p>
+              )}
             </TableCell>
             <TableCell className="text-right tabular-nums">
-              {formatRaw(indicator.raw, indicator.unit)}
+              {indicator.display}
             </TableCell>
             <TableCell className="text-right font-medium tabular-nums">
               {formatScore(indicator.score)}

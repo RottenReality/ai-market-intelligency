@@ -21,12 +21,13 @@ const colombia: Scorecard = {
   indicators: [
     {
       id: 'A3', dimension: 'A', name: 'Regulatory quality', status: 'ok', score: 46.05,
-      raw: -0.1973526, unit: 'index',
+      raw: -0.1973526, unit: 'index', display: '-0.20',
+      meaning: "The World Bank rates Colombia's regulatory quality at -0.20, on a scale from -2.5 (weak) to 2.5 (strong).",
       sources: [{ name: 'World Bank', url: 'https://api.worldbank.org/a3', year: 2025 }],
     },
     {
       id: 'E3', dimension: 'E', name: 'Inflation', status: 'missing', score: null, raw: null,
-      unit: '%', sources: [],
+      unit: '%', display: 'n/a', meaning: null, sources: [],
     },
   ],
   dimensions: [
@@ -123,4 +124,14 @@ test('indicators are grouped under their dimension headings', async () => {
   expect(within(administrative).queryByText('Inflation')).not.toBeInTheDocument()
   const economic = screen.getByRole('region', { name: 'Economic indicators' })
   expect(within(economic).getByText('Inflation')).toBeInTheDocument()
+})
+
+test('each indicator shows its short value and what it means', async () => {
+  vi.mocked(getScorecard).mockResolvedValue(colombia)
+  renderPage('/scorecard?country=COL')
+  const row = (await screen.findByText('Regulatory quality')).closest('tr')!
+  expect(within(row).getByText('-0.20')).toBeInTheDocument()
+  expect(
+    screen.getByText("The World Bank rates Colombia's regulatory quality at -0.20, on a scale from -2.5 (weak) to 2.5 (strong)."),
+  ).toBeInTheDocument()
 })

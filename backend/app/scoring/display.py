@@ -1,4 +1,4 @@
-"""Human-readable formatting of raw values and scores (mirrors frontend/src/lib/format.ts)."""
+"""Human-readable formatting of raw values and scores (the app shows IndicatorResult.display)."""
 
 from app.evidence.models import EvidenceValue
 
