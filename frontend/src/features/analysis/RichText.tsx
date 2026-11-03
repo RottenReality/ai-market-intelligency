@@ -1,9 +1,9 @@
 import { Fragment } from 'react'
 
 // Indicator citations like [A1] or [C1, C3], and numbers that stand alone (so "G1" is not one),
-// with optional $, thousands separators, decimals and a %, M or h unit.
+// with an optional minus sign, $, thousands separators, decimals and a %, M or h unit.
 const TOKEN =
-  /(\[[CAGE]\d(?:\s*,\s*[CAGE]\d)*\])|((?<![A-Za-z\d.,$])\$?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:%|M\b| h\b)?(?![A-Za-z\d]))/g
+  /(\[[CAGE]\d(?:\s*,\s*[CAGE]\d)*\])|((?:(?<=^|[\s(])[-−])?(?<![A-Za-z\d.,$])\$?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:%|M\b| h\b)?(?![A-Za-z\d]))/g
 
 /** AI text with its numbers in bold and its indicator citations as small labels. */
 export function RichText({ text }: { text: string }) {

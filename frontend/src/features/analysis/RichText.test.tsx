@@ -20,3 +20,8 @@ test('indicator IDs and words with digits are not treated as numbers', () => {
   const { container } = render(<RichText text="The G1 overlap and COVID19 notes." />)
   expect(container.querySelectorAll('strong')).toHaveLength(0)
 })
+
+test('negative numbers keep their sign in bold', () => {
+  const { container } = render(<RichText text="Regulatory quality is -0.20, a 3-point gap." />)
+  expect([...container.querySelectorAll('strong')].map((el) => el.textContent)).toEqual(['-0.20', '3'])
+})

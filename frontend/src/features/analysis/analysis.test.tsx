@@ -63,7 +63,7 @@ test('shows saved analysis sections and attribution', async () => {
   renderPanel()
   expect(await screen.findByText(aiText('Colombia scores 52% overall [A1].'))).toBeInTheDocument()
   for (const heading of ['Executive summary', 'Cultural', 'Administrative', 'Geographic',
-    'Economic', 'Barriers', 'Opportunities', 'Recommendation']) {
+    'Economic', 'Barriers', 'Opportunities', 'Recommendation and next steps']) {
     expect(screen.getByRole('heading', { name: heading })).toBeInTheDocument()
   }
   expect(screen.getByText(aiText('No tax treaty [A1]'))).toBeInTheDocument()

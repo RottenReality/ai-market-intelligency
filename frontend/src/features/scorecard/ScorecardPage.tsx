@@ -66,7 +66,7 @@ function ScorecardView({ scorecard }: { scorecard: Scorecard }) {
         <AccessibilitySummary scorecard={scorecard} />
         <DimensionRadar dimensions={scorecard.dimensions} />
       </div>
-      <AnalysisPanel iso3={scorecard.country.iso3} />
+      <AnalysisPanel iso3={scorecard.country.iso3} dimensions={scorecard.dimensions} />
       {scorecard.dimensions.map((dimension) => (
         <section
           key={dimension.id}
