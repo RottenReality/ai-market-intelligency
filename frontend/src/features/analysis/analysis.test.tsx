@@ -1,9 +1,10 @@
+import { aiText } from '@/test/aiText'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ApiError } from '@/lib/api'
 import { createQueryClient } from '@/lib/queryClient'
-import type { CountryAnalysis, ProviderInfo } from '@/lib/types'
+import type { CountryAnalysis, Dimension, ProviderInfo } from '@/lib/types'
 import { AnalysisPanel } from './AnalysisPanel'
 import { generateCountryAnalysis, getCountryAnalysis, getProviders } from './api'
 
@@ -37,10 +38,10 @@ const analysis: CountryAnalysis = {
   },
 }
 
-function renderPanel() {
+function renderPanel(dimensions?: Dimension[]) {
   render(
     <QueryClientProvider client={createQueryClient()}>
-      <AnalysisPanel iso3="COL" />
+      <AnalysisPanel iso3="COL" dimensions={dimensions} />
     </QueryClientProvider>,
   )
 }
@@ -60,12 +61,12 @@ test('no providers shows "AI is not configured" and no Generate button', async (
 test('shows saved analysis sections and attribution', async () => {
   vi.mocked(getCountryAnalysis).mockResolvedValue(analysis)
   renderPanel()
-  expect(await screen.findByText('Colombia scores 52% overall [A1].')).toBeInTheDocument()
+  expect(await screen.findByText(aiText('Colombia scores 52% overall [A1].'))).toBeInTheDocument()
   for (const heading of ['Executive summary', 'Cultural', 'Administrative', 'Geographic',
     'Economic', 'Barriers', 'Opportunities', 'Recommendation']) {
     expect(screen.getByRole('heading', { name: heading })).toBeInTheDocument()
   }
-  expect(screen.getByText('No tax treaty [A1]')).toBeInTheDocument()
+  expect(screen.getByText(aiText('No tax treaty [A1]'))).toBeInTheDocument()
   expect(screen.getByText('Written by Groq (openai/gpt-oss-120b) on 2026-11-01')).toBeInTheDocument()
 })
 
@@ -76,7 +77,7 @@ test('generate uses the chosen provider', async () => {
   await user.selectOptions(await screen.findByLabelText('AI model'), 'qwen/qwen3.8-27b')
   await user.click(screen.getByRole('button', { name: 'Generate' }))
   expect(generateCountryAnalysis).toHaveBeenCalledWith('COL', 'qwen/qwen3.8-27b')
-  expect(await screen.findByText('Colombia scores 52% overall [A1].')).toBeInTheDocument()
+  expect(await screen.findByText(aiText('Colombia scores 52% overall [A1].'))).toBeInTheDocument()
 })
 
 test('flagged shows the review warning', async () => {
@@ -104,7 +105,7 @@ test('quota error keeps the saved analysis visible and shows the message', async
   renderPanel()
   await userEvent.click(await screen.findByRole('button', { name: 'Generate' }))
   expect(await screen.findByText(message)).toBeInTheDocument()
-  expect(screen.getByText('Colombia scores 52% overall [A1].')).toBeInTheDocument()
+  expect(screen.getByText(aiText('Colombia scores 52% overall [A1].'))).toBeInTheDocument()
 })
 
 test('unreadable answer shows the error and re-enables Generate', async () => {
@@ -135,4 +136,43 @@ test('wording that overstates the data shows its own warning', async () => {
     ),
   ).toBeInTheDocument()
   expect(screen.queryByText('Some numbers could not be verified; review before use.')).not.toBeInTheDocument()
+})
+
+const DIMENSIONS: Dimension[] = [
+  { id: 'C', name: 'Cultural', score: 23.2, available: 3, total: 3 },
+  { id: 'A', name: 'Administrative', score: 48.7, available: 3, total: 3 },
+  { id: 'G', name: 'Geographic', score: 70.7, available: 3, total: 3 },
+  { id: 'E', name: 'Economic', score: 66.4, available: 3, total: 3 },
+]
+
+test('each dimension shows its score, coloured by band, and its points as a list', async () => {
+  vi.mocked(getCountryAnalysis).mockResolvedValue({
+    ...analysis,
+    content: {
+      ...analysis.content,
+      dimensions: {
+        ...analysis.content.dimensions,
+        Cultural: 'The cultural score is low at 23 [C1]. 92.1% use WhatsApp [C2].',
+      },
+    },
+  })
+  renderPanel(DIMENSIONS)
+  const cultural = (await screen.findByRole('heading', { name: /Cultural/ })).closest('section')!
+  expect(within(cultural).getByLabelText('Score 23 of 100')).toHaveAttribute('data-band', 'barrier')
+  expect(within(cultural).getAllByRole('listitem')).toHaveLength(2)
+  const geographic = screen.getByRole('heading', { name: /Geographic/ }).closest('section')!
+  expect(within(geographic).getByLabelText('Score 71 of 100')).toHaveAttribute('data-band', 'strength')
+})
+
+test('recommendation and next steps are listed one per sentence', async () => {
+  vi.mocked(getCountryAnalysis).mockResolvedValue({
+    ...analysis,
+    content: { ...analysis.content, recommendation: 'Start with a pilot. Then hire a local partner.' },
+  })
+  renderPanel()
+  const section = (await screen.findByRole('heading', { name: 'Recommendation and next steps' })).closest('section')!
+  expect(within(section).getAllByRole('listitem').map((li) => li.textContent)).toEqual([
+    'Start with a pilot.',
+    'Then hire a local partner.',
+  ])
 })
