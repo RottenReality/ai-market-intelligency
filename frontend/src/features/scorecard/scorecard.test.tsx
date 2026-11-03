@@ -135,3 +135,10 @@ test('each indicator shows its short value and what it means', async () => {
     screen.getByText("The World Bank rates Colombia's regulatory quality at -0.20, on a scale from -2.5 (weak) to 2.5 (strong)."),
   ).toBeInTheDocument()
 })
+
+test('each country in the selector shows its flag', async () => {
+  renderPage()
+  const select = await screen.findByLabelText('Country')
+  const colombia = within(select).getByRole('option', { name: /Colombia/ })
+  expect(colombia.textContent).toBe('🇨🇴 Colombia')
+})
