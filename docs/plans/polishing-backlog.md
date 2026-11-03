@@ -30,6 +30,13 @@ items into a polishing plan (`docs/plans/<date>-polishing-plan.md`) with the tea
 
 ## Product
 
+- **Editable home country and time zone (on hold).** Not just two form fields: G1 (time
+  difference) and C3 (Kogut-Singh) are computed at collect time against the current home, A1/A2
+  (tax treaty, trade agreement) were researched by hand for the USA only, and E1 needs the home
+  country's World Bank income. Doing it right means computing G1/C3 at scoring time, tagging A1/A2
+  rows with the home they were researched for (other homes show "no data" with the reason), and
+  fetching the new home's income when it is saved.
+
 - **Named tunnel with a domain** for a stable public address (see `docs/deploy.md`).
 - **README screenshots and a demo GIF.**
 - **Time-zone sampling note (minor).** G1 samples once a day; fine for current countries, revisit
