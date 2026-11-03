@@ -1,5 +1,7 @@
 # AI Analysis, Free AI Providers and Editable Company Profile: Design
 
+> **Update 2026-11-02:** Gemini was dropped: its free tier was often overloaded and slow, and the alternatives checked (Cerebras, Mistral) need a card or no longer activate free keys. The AI now runs only on Groq, offering two models (`openai/gpt-oss-120b`, `qwen/qwen3.8-27b`); Groq's free limits are per model, so each suggests the other. Wherever this document says Gemini, read "the second Groq model".
+
 - **Status:** draft for review · 2026-11-01
 - **Builds on:** `docs/specs/2026-10-25-cage-market-accessibility-design.md` (the original spec). Everything not mentioned here stays as it is.
 - **Public repo rule still applies:** no real company data or API keys in git.

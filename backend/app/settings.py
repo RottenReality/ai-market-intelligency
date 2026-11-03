@@ -7,6 +7,8 @@ from dotenv import dotenv_values
 
 # backend/.env, found from this file so it works from any working directory.
 ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
+# Free Groq models offered in the AI selector, best first (GROQ_MODELS overrides, comma-separated).
+DEFAULT_GROQ_MODELS = ("openai/gpt-oss-120b", "qwen/qwen3.8-27b")
 REQUIRED_VARS = ("APP_USERNAME", "APP_PASSWORD_HASH", "SECRET_KEY")
 
 
@@ -24,10 +26,12 @@ class Settings:
     db_path: Path
     config_dir: Path
     data_dir: Path
-    gemini_api_key: str | None = None
-    gemini_model: str = "gemini-3.8-flash"
     groq_api_key: str | None = None
-    groq_model: str = "openai/gpt-oss-120b"
+    groq_models: tuple[str, ...] = DEFAULT_GROQ_MODELS
+
+
+def _names(value: str | None) -> tuple[str, ...]:
+    return tuple(name.strip() for name in (value or "").split(",") if name.strip())
 
 
 def _flag(value: str | None) -> bool:
@@ -63,8 +67,6 @@ def load_settings(env: Mapping[str, str] | None = None) -> Settings:
         db_path=Path(env.get("DB_PATH", "data/app.sqlite")),
         config_dir=Path(env.get("CONFIG_DIR", "config")),
         data_dir=Path(env.get("DATA_DIR", "data")),
-        gemini_api_key=env.get("GEMINI_API_KEY") or None,
-        gemini_model=env.get("GEMINI_MODEL") or "gemini-3.8-flash",
         groq_api_key=env.get("GROQ_API_KEY") or None,
-        groq_model=env.get("GROQ_MODEL") or "openai/gpt-oss-120b",
+        groq_models=_names(env.get("GROQ_MODELS")) or DEFAULT_GROQ_MODELS,
     )

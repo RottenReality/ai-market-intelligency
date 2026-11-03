@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 
 from pydantic import BaseModel
 
-from app.ai.providers import PROVIDER_LABELS, TextModel
+from app.ai.providers import PROVIDER_LABELS, RETIRED_LABELS, TextModel
 from app.analysis.generate import generate_structured
 from app.analysis.guard import numbers_in
 from app.analysis.prompt import (
@@ -38,7 +38,7 @@ def _now() -> str:
 
 
 def _label(provider: str) -> str:
-    return PROVIDER_LABELS.get(provider, provider)  # type: ignore[call-overload]
+    return {**RETIRED_LABELS, **PROVIDER_LABELS}.get(provider, provider)
 
 
 def _to_country_analysis(stored: StoredAnalysis, current_key: str) -> CountryAnalysis:

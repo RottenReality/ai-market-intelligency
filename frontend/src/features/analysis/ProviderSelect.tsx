@@ -9,16 +9,16 @@ interface Props {
 export function ProviderSelect({ providers, value, onChange }: Props) {
   return (
     <label className="flex items-center gap-2 text-sm">
-      <span>AI provider</span>
+      <span>AI model</span>
       <select
-        aria-label="AI provider"
+        aria-label="AI model"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         className="h-9 rounded-md border border-input bg-background px-2 text-sm shadow-xs"
       >
         {providers.map((p) => (
           <option key={p.id} value={p.id}>
-            {p.label} ({p.model})
+            {p.label}
           </option>
         ))}
       </select>

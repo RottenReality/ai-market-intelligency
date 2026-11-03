@@ -6,7 +6,7 @@ from typing import Annotated
 import httpx2
 from fastapi import Depends
 
-from app.ai.providers import ProviderId, TextModel, build_models
+from app.ai.providers import TextModel, build_models
 from app.analysis.store import AnalysisStore
 from app.evidence.store import EvidenceStore
 from app.profile.company import CompanyProfile, load_profile
@@ -50,6 +50,6 @@ def get_http_client() -> httpx2.Client:
 
 def get_ai_models(
     settings: Annotated[Settings, Depends(get_settings)],
-) -> dict[ProviderId, TextModel]:
-    """The AI providers that have an API key configured (tests override this with fakes)."""
+) -> dict[str, TextModel]:
+    """The AI models on offer, by option id (tests override this with fakes)."""
     return build_models(settings, get_http_client())

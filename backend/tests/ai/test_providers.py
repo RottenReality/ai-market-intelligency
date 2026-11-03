@@ -101,9 +101,10 @@ def test_rejected_json_counts_as_an_unreadable_answer():
 
 def test_rate_limit_says_wait_a_minute_and_suggests_the_other_model():
     error = failure(httpx2.Response(429))
-    assert (error.status_code, error.detail) == (
-        429, "Groq's free limit for GPT-OSS 120B was reached. "
-        "Wait a minute and try again, or use Qwen 3.8 27B.",
+    assert error.status_code == 429
+    assert error.detail == (
+        "Groq's free limit for GPT-OSS 120B was reached. "
+        "Wait a minute and try again, or use Qwen 3.8 27B."
     )
 
 
