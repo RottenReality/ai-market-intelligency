@@ -63,6 +63,8 @@ def test_c1_uses_english_level_when_company_does_not_speak_local_language():
     c1 = by_id(build_scorecard(inputs(country_values=values)))["C1"]
     assert c1.score == 25
     assert c1.raw == "low"
+    assert c1.display == "English: Low"
+    assert c1.meaning.startswith("Colombia's main business language is Spanish")
 
 
 def test_c1_shows_local_language_supported_when_company_speaks_it():
@@ -78,3 +80,13 @@ def test_c1_shows_local_language_supported_when_company_speaks_it():
 def test_home_country_source_is_labelled():
     e1 = by_id(build_scorecard(inputs()))["E1"]
     assert [source.name for source in e1.sources] == ["World Bank", "World Bank (home: USA)"]
+
+
+def test_missing_indicator_has_no_display_value_or_meaning():
+    c1 = by_id(build_scorecard(inputs()))["C1"]
+    assert (c1.status, c1.display, c1.meaning) == ("missing", "n/a", None)
+
+
+def test_g1_is_named_after_what_it_shows():
+    g1 = by_id(build_scorecard(inputs()))["G1"]
+    assert g1.name == "Time difference with home"
