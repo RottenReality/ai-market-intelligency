@@ -24,10 +24,8 @@ def test_load_settings_applies_defaults():
     assert settings.trust_proxy is False
     assert settings.cookie_secure is False
     assert settings.db_path == Path("data/app.sqlite")
-    assert settings.gemini_api_key is None
     assert settings.groq_api_key is None
-    assert settings.gemini_model == "gemini-3.8-flash"
-    assert settings.groq_model == "openai/gpt-oss-120b"
+    assert settings.groq_models == ("openai/gpt-oss-120b", "qwen/qwen3.8-27b")
 
 
 def test_load_settings_parses_booleans():
@@ -38,11 +36,10 @@ def test_load_settings_parses_booleans():
 
 def test_load_settings_reads_ai_keys_and_models():
     settings = load_settings(
-        {**REQUIRED, "GEMINI_API_KEY": "g-key", "GROQ_API_KEY": "q-key", "GROQ_MODEL": "llama-3.3-70b-versatile"}
+        {**REQUIRED, "GROQ_API_KEY": "q-key", "GROQ_MODELS": " llama-a , ,llama-b "}
     )
-    assert settings.gemini_api_key == "g-key"
     assert settings.groq_api_key == "q-key"
-    assert settings.groq_model == "llama-3.3-70b-versatile"
+    assert settings.groq_models == ("llama-a", "llama-b")
 
 
 def write_env(path: Path, values: dict[str, str]) -> Path:

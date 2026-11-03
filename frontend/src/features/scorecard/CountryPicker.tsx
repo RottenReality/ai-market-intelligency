@@ -1,3 +1,4 @@
+import { flagEmoji } from '@/lib/flags'
 import type { CountrySummary } from '@/lib/types'
 
 interface Props {
@@ -23,7 +24,7 @@ export function CountryPicker({ countries, value, onChange }: Props) {
         </option>
         {countries.map((country) => (
           <option key={country.iso3} value={country.iso3}>
-            {country.name}
+            {`${flagEmoji(country.iso3)} ${country.name}`.trim()}
             {country.has_data ? '' : ' (no data yet)'}
           </option>
         ))}

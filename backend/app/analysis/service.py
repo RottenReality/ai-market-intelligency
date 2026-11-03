@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 
 from pydantic import BaseModel
 
-from app.ai.providers import PROVIDER_LABELS, TextModel
+from app.ai.providers import PROVIDER_LABELS, RETIRED_LABELS, TextModel
 from app.analysis.generate import generate_structured
 from app.analysis.guard import numbers_in
 from app.analysis.prompt import (
@@ -25,6 +25,7 @@ class CountryAnalysis(BaseModel):
     model: str
     created_at: str
     flagged: bool
+    overstated: bool = False  # wording guard: a share of users still called a preference
     outdated: bool
     content: CountryAnalysisContent
 
@@ -38,7 +39,7 @@ def _now() -> str:
 
 
 def _label(provider: str) -> str:
-    return PROVIDER_LABELS.get(provider, provider)  # type: ignore[call-overload]
+    return {**RETIRED_LABELS, **PROVIDER_LABELS}.get(provider, provider)
 
 
 def _to_country_analysis(stored: StoredAnalysis, current_key: str) -> CountryAnalysis:
@@ -49,6 +50,7 @@ def _to_country_analysis(stored: StoredAnalysis, current_key: str) -> CountryAna
         model=stored.model,
         created_at=stored.created_at,
         flagged=stored.flagged,
+        overstated=stored.overstated,
         outdated=stored.cache_key != current_key,
         content=CountryAnalysisContent.model_validate(stored.content),
     )
@@ -60,12 +62,13 @@ def generate_country_analysis(
     """Always ask the AI (the user chose a provider) and replace the saved analysis."""
     key = analysis_key(scorecard.model_dump_json(), profile)
     allowed = numbers_in(country_data_block(scorecard))
-    content, flagged = generate_structured(
+    content, flagged, overstated = generate_structured(
         model, country_prompt(scorecard, profile), allowed, CountryAnalysisContent
     )
     stored = StoredAnalysis(
         kind="country", subject=scorecard.country.iso3, cache_key=key, provider=model.provider,
-        model=model.model, content=content.model_dump(), flagged=flagged, created_at=_now(),
+        model=model.model, content=content.model_dump(), flagged=flagged,
+        overstated=overstated, created_at=_now(),
     )
     store.put(stored)
     return _to_country_analysis(stored, key)
@@ -95,6 +98,7 @@ class ComparisonInsight(BaseModel):
     model: str
     created_at: str
     flagged: bool
+    overstated: bool = False  # wording guard: a share of users still called a preference
     outdated: bool
     summary: str
     ranking: list[RankedExplanation]
@@ -141,6 +145,7 @@ def _to_insight(
         model=stored.model,
         created_at=stored.created_at,
         flagged=stored.flagged,
+        overstated=stored.overstated,
         outdated=stored.cache_key != current_key,
         summary=content.summary,
         ranking=order_ranking(scorecards, content.ranking),
@@ -153,13 +158,14 @@ def generate_comparison_insight(
 ) -> ComparisonInsight:
     key = _comparison_key(scorecards, profile)
     allowed = numbers_in(comparison_data_block(scorecards))
-    content, flagged = generate_structured(
+    content, flagged, overstated = generate_structured(
         model, comparison_prompt(scorecards, profile), allowed, ComparisonInsightContent
     )
     stored = StoredAnalysis(
         kind="comparison", subject=comparison_subject([c.country.iso3 for c in scorecards]),
         cache_key=key, provider=model.provider, model=model.model,
-        content=content.model_dump(), flagged=flagged, created_at=_now(),
+        content=content.model_dump(), flagged=flagged,
+        overstated=overstated, created_at=_now(),
     )
     store.put(stored)
     return _to_insight(stored, scorecards, key)

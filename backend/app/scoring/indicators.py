@@ -89,7 +89,7 @@ INDICATORS: list[IndicatorDef] = [
         "regulatory_quality", ("regulatory_quality",),
     ),
     IndicatorDef(
-        "G1", "G", "Working-hours overlap with home", "hours",
+        "G1", "G", "Time difference with home", "hours",
         lambda i: rules.hours_overlap(i.value("max_hour_diff_home")),
         "max_hour_diff_home", ("max_hour_diff_home",),
     ),

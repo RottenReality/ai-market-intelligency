@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS analyses (
     content    TEXT NOT NULL,
     flagged    INTEGER NOT NULL,
     created_at TEXT NOT NULL,
+    overstated INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (kind, subject)
 )
 """
@@ -35,6 +36,7 @@ class StoredAnalysis(BaseModel):
     content: dict
     flagged: bool
     created_at: str
+    overstated: bool = False  # wording guard: a share of users still called a preference
 
 
 class AnalysisStore:
@@ -44,6 +46,11 @@ class AnalysisStore:
         with self._connect() as conn:
             conn.execute("DROP TABLE IF EXISTS explanations")  # replaced by this table
             conn.execute(_SCHEMA)
+            columns = {row[1] for row in conn.execute("PRAGMA table_info(analyses)")}
+            if "overstated" not in columns:  # databases created before the wording guard
+                conn.execute(
+                    "ALTER TABLE analyses ADD COLUMN overstated INTEGER NOT NULL DEFAULT 0"
+                )
 
     @contextmanager
     def _connect(self) -> Iterator[sqlite3.Connection]:
@@ -53,23 +60,25 @@ class AnalysisStore:
     def get(self, kind: Kind, subject: str) -> StoredAnalysis | None:
         with self._connect() as conn:
             row = conn.execute(
-                "SELECT cache_key, provider, model, content, flagged, created_at "
+                "SELECT cache_key, provider, model, content, flagged, created_at, overstated "
                 "FROM analyses WHERE kind = ? AND subject = ?",
                 (kind, subject),
             ).fetchone()
         if row is None:
             return None
-        cache_key, provider, model, content, flagged, created_at = row
+        cache_key, provider, model, content, flagged, created_at, overstated = row
         return StoredAnalysis(
             kind=kind, subject=subject, cache_key=cache_key, provider=provider, model=model,
             content=json.loads(content), flagged=bool(flagged), created_at=created_at,
+            overstated=bool(overstated),
         )
 
     def put(self, analysis: StoredAnalysis) -> None:
         with self._connect() as conn:
             conn.execute(
-                "INSERT OR REPLACE INTO analyses VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT OR REPLACE INTO analyses (kind, subject, cache_key, provider, model, "
+                "content, flagged, created_at, overstated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (analysis.kind, analysis.subject, analysis.cache_key, analysis.provider,
                  analysis.model, json.dumps(analysis.content, ensure_ascii=False),
-                 int(analysis.flagged), analysis.created_at),
+                 int(analysis.flagged), analysis.created_at, int(analysis.overstated)),
             )

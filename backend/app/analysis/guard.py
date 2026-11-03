@@ -21,3 +21,20 @@ def find_unsupported_numbers(text: str, allowed: set[float], tolerance: float = 
         for match in _NUMBER.finditer(text)
         if not any(abs(_value(match.group(0)) - number) <= tolerance for number in allowed)
     ]
+
+
+# Wording guard: a share of people who use something (C2: WhatsApp) is not a preference.
+_SENTENCE_END = re.compile(r"(?<=[.!?])\s+")
+_PREFERENCE = re.compile(
+    r"\b(?:prefer|prefers|preferred|preference|preferences|favou?r|favou?rs|favou?red)\b", re.IGNORECASE
+)
+_USAGE_TOPIC = re.compile(r"whatsapp", re.IGNORECASE)
+
+
+def find_overstatements(text: str) -> list[str]:
+    """Sentences that turn the share of WhatsApp users into a preference."""
+    return [
+        sentence.strip()
+        for sentence in _SENTENCE_END.split(text)
+        if _USAGE_TOPIC.search(sentence) and _PREFERENCE.search(sentence)
+    ]

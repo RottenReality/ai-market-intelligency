@@ -17,6 +17,10 @@ export interface IndicatorResult {
   score: number | null
   raw: RawValue
   unit: string
+  /** Short value for tables, e.g. "English: Low" or "3 h difference". */
+  display: string
+  /** One plain sentence: what the value is, its scale and its direction. */
+  meaning: string | null
   sources: Source[]
 }
 
@@ -77,6 +81,8 @@ export interface AnalysisMeta {
   model: string
   created_at: string
   flagged: boolean
+  /** A share of users was still described as a preference after the retry. */
+  overstated: boolean
   outdated: boolean
 }
 

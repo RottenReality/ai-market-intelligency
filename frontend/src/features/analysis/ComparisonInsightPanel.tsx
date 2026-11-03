@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { ComparisonInsight } from '@/lib/types'
 import { AnalysisMetaNotes } from './AnalysisMetaNotes'
 import { ProviderSelect } from './ProviderSelect'
+import { RichText } from './RichText'
+import { ScoreChip } from './ScoreChip'
 import { generateComparisonInsight, getComparisonInsight } from './api'
 import { aiErrorText } from './errors'
 import { useProviderChoice } from './useProviderChoice'
@@ -47,7 +49,7 @@ export function ComparisonInsightPanel({ codes }: { codes: string[] }) {
           <p className="text-sm text-muted-foreground">AI is not configured</p>
         )}
         {generate.isPending && (
-          <p className="text-sm text-muted-foreground">Writing the insight… this can take up to a minute.</p>
+          <p className="text-sm text-muted-foreground">Writing the insight… this can take up to two minutes.</p>
         )}
         {generate.isError && (
           <p role="alert" className="text-sm text-destructive">
@@ -62,30 +64,51 @@ export function ComparisonInsightPanel({ codes }: { codes: string[] }) {
 
 function InsightContent({ insight }: { insight: ComparisonInsight }) {
   return (
-    <div className="flex flex-col gap-4 leading-relaxed">
+    <div className="flex flex-col gap-6">
       <AnalysisMetaNotes meta={insight} />
-      <p className="rounded-md bg-muted p-4">{insight.summary}</p>
+      <section className="rounded-lg border-l-4 border-[#2a78d6] bg-[#eef4fc] px-5 py-4 dark:bg-[#13233a]">
+        <h3 className="mb-2 font-semibold">Summary</h3>
+        <p className="leading-7">
+          <RichText text={insight.summary} />
+        </p>
+      </section>
       <section>
-        <h3 className="mb-2 font-medium">Why they rank this way</h3>
-        <ol aria-label="Ranking" className="flex flex-col gap-2">
+        <h3 className="mb-3 font-semibold">Why they rank this way</h3>
+        <ol aria-label="Ranking" className="flex flex-col gap-4">
           {insight.ranking.map((entry) => (
-            <li key={entry.iso3} className="text-sm">
-              <b>
-                {entry.rank}. {entry.name}
-              </b>{' '}
-              <span className="text-muted-foreground tabular-nums">
-                {entry.accessibility === null ? 'not calculated' : `${Math.round(entry.accessibility)}%`}
+            <li key={entry.iso3} className="flex gap-3">
+              <span
+                aria-hidden
+                className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold tabular-nums"
+              >
+                {entry.rank}
               </span>
-              {' · '}
-              {entry.explanation}
+              <div className="flex flex-col gap-1">
+                <p className="flex items-center gap-2 font-medium">
+                  <span className="sr-only">{entry.rank}. </span>
+                  {entry.name}
+                  {entry.accessibility === null ? (
+                    <span className="text-sm text-muted-foreground">not calculated</span>
+                  ) : (
+                    <ScoreChip score={entry.accessibility} suffix="%" />
+                  )}
+                </p>
+                <p className="text-sm leading-6">
+                  <RichText text={entry.explanation} />
+                </p>
+              </div>
             </li>
           ))}
         </ol>
       </section>
       <section>
-        <h3 className="mb-1 font-medium">Key differences</h3>
-        <ul className="list-disc pl-5 text-sm">
-          {insight.key_differences.map((item) => <li key={item}>{item}</li>)}
+        <h3 className="mb-2 font-semibold">Key differences</h3>
+        <ul className="flex list-disc flex-col gap-1.5 pl-5 text-sm leading-6 marker:text-muted-foreground">
+          {insight.key_differences.map((item) => (
+            <li key={item}>
+              <RichText text={item} />
+            </li>
+          ))}
         </ul>
       </section>
     </div>

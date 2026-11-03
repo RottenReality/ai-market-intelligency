@@ -4,12 +4,16 @@ years (never URLs or timestamps), so every number it may use is listed in the DA
 import json
 
 from app.profile.company import CompanyProfile
-from app.scoring.display import format_raw
 from app.scoring.scorecard import DIMENSION_NAMES, Scorecard
 
 RULES = """Rules:
-- Use digits only for numbers that appear in DATA. Write timeframes and quantities in words
+- Use digits only for numbers that appear in DATA. Write each of them
+  exactly as DATA shows it (52, never fifty-two). Write timeframes and quantities in words
   (for example "a short pilot", "within the first months"), never as digits.
+- Every score goes from 0 to 100: higher means easier for the company, lower means harder.
+- Describe each value as its "meaning" says; do not reverse it or make it stronger.
+  A share of people who use something is not a preference:
+  write "use WhatsApp", never "prefer" or "rely on".
 - Do not add facts, figures or percentages from memory.
 - Cite the indicators behind each statement with their IDs in brackets, e.g. [A1].
 - Indicators with "score": null have no data: say so instead of guessing.
@@ -49,8 +53,9 @@ def country_data(scorecard: Scorecard) -> dict:
                 "name": i.name,
                 "dimension": DIMENSION_NAMES[i.dimension],
                 "score": _rounded(i.score),
-                "value": "no data" if i.score is None else format_raw(i.raw, i.unit),
+                "value": "no data" if i.score is None else i.display,
                 "year": max((s.year for s in i.sources if s.year), default=None),
+                **({"meaning": i.meaning} if i.meaning else {}),
             }
             for i in scorecard.indicators
         ],

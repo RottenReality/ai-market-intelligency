@@ -16,6 +16,14 @@ export function AnalysisMetaNotes({ meta }: { meta: AnalysisMeta }) {
           <AlertDescription>Some numbers could not be verified; review before use.</AlertDescription>
         </Alert>
       )}
+      {meta.overstated && (
+        <Alert>
+          <AlertDescription>
+            Some wording may overstate the data (a share of users is not a preference); review
+            before use.
+          </AlertDescription>
+        </Alert>
+      )}
       <p className="text-xs text-muted-foreground">
         Written by {meta.provider_label} ({meta.model}) on {meta.created_at.slice(0, 10)}
       </p>

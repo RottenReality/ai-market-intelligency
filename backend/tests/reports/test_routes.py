@@ -10,7 +10,7 @@ from tests.scoring.evidence_factory import USA, evidence
 
 
 class ExplodingModel:
-    provider = "gemini"
+    provider = "groq"
     model = "test"
 
     def complete_json(self, prompt: str) -> str:
@@ -41,7 +41,7 @@ def test_pdf_endpoint_returns_pdf_with_attachment_header(auth_client, settings):
 
 def test_pdf_endpoint_never_calls_the_model(auth_client, settings):
     seed(settings)
-    auth_client.app.dependency_overrides[get_ai_models] = lambda: {"gemini": ExplodingModel()}
+    auth_client.app.dependency_overrides[get_ai_models] = lambda: {"gpt": ExplodingModel()}
     assert auth_client.get("/api/reports/pdf", params={"iso3": "COL"}).status_code == 200
 
 
@@ -68,13 +68,13 @@ def test_pdf_includes_saved_analysis_and_comparison_insight(auth_client, setting
         "key_differences": ["Language [C1]"],
     }
     auth_client.app.dependency_overrides[get_ai_models] = lambda: {
-        "gemini": FakeModel([country_content(executive_summary="SAVED-ANALYSIS [A1]."),
+        "gpt": FakeModel([country_content(executive_summary="SAVED-ANALYSIS [A1]."),
                              insight_reply])
     }
-    auth_client.post("/api/countries/COL/analysis", json={"provider": "gemini"})
+    auth_client.post("/api/countries/COL/analysis", json={"provider": "gpt"})
     auth_client.post("/api/comparison/insight",
-                     json={"iso3": ["COL", "MEX"], "provider": "gemini"})
-    auth_client.app.dependency_overrides[get_ai_models] = lambda: {"gemini": ExplodingModel()}
+                     json={"iso3": ["COL", "MEX"], "provider": "gpt"})
+    auth_client.app.dependency_overrides[get_ai_models] = lambda: {"gpt": ExplodingModel()}
 
     text = pdf_text(auth_client.get("/api/reports/pdf", params={"iso3": "MEX,COL"}).content)
     assert "SAVED-ANALYSIS [A1]." in text

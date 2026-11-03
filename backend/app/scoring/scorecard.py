@@ -3,7 +3,9 @@ from typing import Literal
 from pydantic import BaseModel
 
 from app.evidence.models import EvidenceRecord
+from app.scoring.display import MISSING
 from app.scoring.indicators import INDICATORS, DimensionId, IndicatorDef, Inputs
+from app.scoring.wording import describe
 
 
 class Source(BaseModel):
@@ -20,6 +22,8 @@ class IndicatorResult(BaseModel):
     score: float | None
     raw: float | bool | str | None
     unit: str
+    display: str = MISSING  # short value for tables, e.g. "English: Low" or "3 h difference"
+    meaning: str | None = None  # one plain sentence: what the value is, its scale and direction
     sources: list[Source]
 
 
@@ -69,6 +73,7 @@ def _evaluate(definition: IndicatorDef, inputs: Inputs) -> IndicatorResult:
         raw = definition.raw(inputs)
     else:
         raw = inputs.value(definition.raw_metric) if definition.raw_metric else None
+    display, meaning = (MISSING, None) if score is None else describe(definition.id, inputs)
     return IndicatorResult(
         id=definition.id,
         dimension=definition.dimension,
@@ -77,6 +82,8 @@ def _evaluate(definition: IndicatorDef, inputs: Inputs) -> IndicatorResult:
         score=score,
         raw=None if score is None else raw,
         unit=definition.unit,
+        display=display,
+        meaning=meaning,
         sources=sources,
     )
 
