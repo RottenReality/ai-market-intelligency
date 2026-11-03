@@ -82,3 +82,20 @@ def test_numbers_and_wording_are_fixed_in_the_same_retry():
     model = FakeModel([both, country_content()])
     assert run(model)[1:] == (False, False)
     assert "20%" in model.prompts[1] and "prefer WhatsApp" in model.prompts[1]
+
+
+def test_limit_reached_on_the_retry_keeps_the_first_answer_marked():
+    from app.ai.providers import AIProviderError
+
+    limit = AIProviderError(429, "limit")
+    content, flagged, overstated = run(FakeModel([PREFERS, limit]))
+    assert (flagged, overstated) == (False, True)
+    assert content.barriers[0] == "Most internet users prefer WhatsApp [C2]"
+    assert run(FakeModel([INVENTED, limit]))[1:] == (True, False)
+
+
+def test_limit_reached_with_no_readable_answer_is_still_an_error():
+    from app.ai.providers import AIProviderError
+
+    with pytest.raises(AIProviderError):
+        run(FakeModel(["not json", AIProviderError(429, "limit")]))

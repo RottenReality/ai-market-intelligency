@@ -30,6 +30,10 @@ BLUE = (31, 95, 173)
 MUTED = (82, 81, 78)
 AMBER = (180, 83, 9)
 AI_FILL = (238, 244, 252)  # #eef4fc: light blue marks AI-written text
+OVERSTATED_NOTE = (
+    "Some wording may overstate the data (a share of users is not a preference); "
+    "review before use."
+)
 HEADER = FontFace(emphasis="BOLD", color=(255, 255, 255), fill_color=BLUE)
 MAX_RADAR_SERIES = 3
 
@@ -151,6 +155,8 @@ def _attribution(pdf: FPDF, meta: CountryAnalysis | ComparisonInsight) -> None:
                     f"{meta.created_at[:10]}. Numbers checked against the data.", 8, MUTED)
     if meta.flagged:
         _paragraph(pdf, "Some numbers could not be verified; review before use.", 9, AMBER)
+    if meta.overstated:
+        _paragraph(pdf, OVERSTATED_NOTE, 9, AMBER)
     if meta.outdated:
         _paragraph(pdf, "Written before the latest data or company change.", 9, AMBER)
 

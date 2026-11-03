@@ -15,6 +15,7 @@ const insight: ComparisonInsight = {
   model: 'openai/gpt-oss-120b',
   created_at: '2026-11-01T10:00:00+00:00',
   flagged: false,
+  overstated: false,
   outdated: false,
   summary: 'Mexico leads with 64% while Colombia trails by 15 points [A1].',
   ranking: [

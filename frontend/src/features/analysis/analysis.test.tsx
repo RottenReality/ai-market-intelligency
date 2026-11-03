@@ -21,6 +21,7 @@ const analysis: CountryAnalysis = {
   model: 'openai/gpt-oss-120b',
   created_at: '2026-11-01T10:00:00+00:00',
   flagged: false,
+  overstated: false,
   outdated: false,
   content: {
     executive_summary: 'Colombia scores 52% overall [A1].',
@@ -123,4 +124,15 @@ test('the model selector lists each Groq model by name', async () => {
   const select = await screen.findByLabelText('AI model')
   const options = within(select).getAllByRole('option').map((option) => option.textContent)
   expect(options).toEqual(['Groq · GPT-OSS 120B', 'Groq · Qwen 3.8 27B'])
+})
+
+test('wording that overstates the data shows its own warning', async () => {
+  vi.mocked(getCountryAnalysis).mockResolvedValue({ ...analysis, overstated: true })
+  renderPanel()
+  expect(
+    await screen.findByText(
+      'Some wording may overstate the data (a share of users is not a preference); review before use.',
+    ),
+  ).toBeInTheDocument()
+  expect(screen.queryByText('Some numbers could not be verified; review before use.')).not.toBeInTheDocument()
 })
