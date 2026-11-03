@@ -20,3 +20,15 @@ def test_guard_flags_invented_number():
 
 def test_guard_ignores_indicator_ids():
     assert find_unsupported_numbers("See A3 and G1 for details.", ALLOWED) == []
+
+
+def test_overstatements_find_a_share_of_users_described_as_a_preference():
+    from app.analysis.guard import find_overstatements
+
+    text = ("Colombia scores 52. 92.1% of internet users prefer WhatsApp [C2]. "
+            "There is a local preference for WhatsApp! The company relies on SMS and email. "
+            "92.1% use WhatsApp, a favorable sign for chat-based tools.")
+    assert find_overstatements(text) == [
+        "92.1% of internet users prefer WhatsApp [C2].",
+        "There is a local preference for WhatsApp!",
+    ]

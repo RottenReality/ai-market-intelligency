@@ -38,10 +38,13 @@ def all_text(pdf: bytes) -> str:
     return " ".join(" ".join(pages_text(pdf)).split())
 
 
-def analysis(flagged: bool = False, outdated: bool = False, **content) -> CountryAnalysis:
+def analysis(
+    flagged: bool = False, outdated: bool = False, overstated: bool = False, **content
+) -> CountryAnalysis:
     return CountryAnalysis(
         iso3="COL", provider="groq", provider_label="Groq", model="openai/gpt-oss-120b",
         created_at="2026-11-01T10:00:00+00:00", flagged=flagged, outdated=outdated,
+        overstated=overstated,
         content=CountryAnalysisContent.model_validate(country_content(**content)),
     )
 
@@ -162,3 +165,12 @@ def test_indicator_table_uses_the_worded_values():
     text = all_text(build_report([colombia_scorecard()], {}, None, PROFILE, GENERATED))
     assert "Time difference with home" in text
     assert "3 h difference" in text
+
+
+def test_overstated_wording_note():
+    note = "Some wording may overstate the data (a share of users is not a preference); review before use."
+    marked = build_report([colombia_scorecard()], {"COL": analysis(overstated=True)}, None,
+                          PROFILE, GENERATED)
+    assert note in all_text(marked)
+    plain = build_report([colombia_scorecard()], {"COL": analysis()}, None, PROFILE, GENERATED)
+    assert "overstate" not in all_text(plain)
